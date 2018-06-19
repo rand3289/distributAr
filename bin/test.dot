@@ -1,0 +1,6 @@
+digraph 22 {
+1 [label=0]
+2 [label=1000]
+1 -> 2 [label=32]
+2 -> 1 [label=16]
+}

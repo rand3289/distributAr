@@ -1,0 +1,2 @@
+# send a client command to the locally running server
+utils/netc 127.0.0.1 12345 $*

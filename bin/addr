@@ -1,0 +1,23 @@
+#!/bin/sh
+# Some systems do not setup a default route for multicast traffic.
+# Run this in case you are getting errno 19 (No such device) when trying to join a multicast group
+# or error 101 (Network is unreachable) when trying to send to a multicast group
+# Add or modify the interface name if you have anything other than eth0 and wlan0
+
+# sudo route add -net 224.0.0.0 netmask 224.0.0.0 eth0
+# sudo route add -net 224.0.0.0 netmask 224.0.0.0 wlan0
+# sometimes interfaces are named differently than eth0 and wlan0
+
+interfaces=`ip link show | grep MULTICAST | cut -f2 -d:`
+echo adding multicast routes on the following interfaces supporting MULTICAST: $interfaces
+
+for face in $interfaces
+do
+    sudo route add -net 224.0.0.0 netmask 224.0.0.0 $face
+done
+
+
+# We are sending large UDP packets. To prevent fragmentation, permanently change MTU size:
+# add "mtu 32000" to /etc/network/interfaces
+# only if NIC supports jumbo frames.
+# check using: ifconfig $face mtu 9000

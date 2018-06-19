@@ -1,0 +1,6 @@
+#!/bin/sh
+echo starting the network by issuing commands
+echo Make sure there is an instance of a tracker, server and timeserver running!
+untils/netc add 2 10000
+untils/netc connect 2 1
+untils/netc connect 1 2

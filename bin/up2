@@ -1,0 +1,3 @@
+echo starting network from a graph file
+echo Make sure there is an instance of a tracker, server and timeserver running!
+utils/netc 127.0.0.1 12345 create bin/test.dot
