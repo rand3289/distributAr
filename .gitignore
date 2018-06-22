@@ -3,3 +3,8 @@
 *.a
 *.pyc
 lib*.so.?
+nets
+netc
+nett
+netw
+netg

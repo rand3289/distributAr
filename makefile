@@ -17,10 +17,14 @@ $(EXECUTABLE): $(OBJECTS)
 .cpp.o: $(SOURCES) $(HEADERS) $(ONLYH)
 	$(CC) -c $(CFLAGS) $< -o $@
 
-so:	dummy
+.PHONY: so utils
+
+so:
+	@echo "----------------------------------------------------------"
 	cd dummy;	make -f makefile --no-print-directory; cd ..
 
-utils:	dummy
+utils:
+	@echo "----------------------------------------------------------"
 	cd utils;	make -f makefile --no-print-directory; cd ..
 
 clean:
