@@ -23,3 +23,4 @@ clean:
 	rm -f netg netc nett netw
 	rm -f *~
 	rm -f \#*\#
+
