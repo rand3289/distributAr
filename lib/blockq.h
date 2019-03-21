@@ -4,6 +4,7 @@
 #include <vector>
 #include <mutex>
 #include <condition_variable>
+#include <functional> // std::bind()
 #include <assert.h>
 
 
