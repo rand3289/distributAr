@@ -2,4 +2,4 @@
 # start the server
 
 setenv LD_LIBRARY_PATH .
-nets 127.0.0.1 12345 libdummy.so.1:5:
+./nets 127.0.0.1 12345 libdummy.so.1:5:

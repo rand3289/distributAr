@@ -90,7 +90,7 @@ int main(int argc, char* argv[]){
 	        timeBuff = make_shared<TimeBuffer>();
 	    }
 
-	    if( sharedQ.pop(data) ){
+	    if( sharedQ.popNoWait(data) ){
 	        for(auto& serv: servers){
 		    bool notify = serv->getCluster().isWaitForInput();
 	            serv->getIncomingQ().pushNotifyIf(data, notify);

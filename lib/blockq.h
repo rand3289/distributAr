@@ -44,7 +44,7 @@ public:
 			std::cerr << "CAUGHT EXEPTION" << std::endl;
 			return false;
 		}
-		std::cout << "POP" << std::endl; std::cout.flush();
+//		std::cout << "POP" << std::endl; std::cout.flush();
 		obj = data.back();
 		data.pop_back();
 		return true;
