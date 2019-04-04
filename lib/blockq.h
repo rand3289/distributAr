@@ -6,6 +6,7 @@
 #include <condition_variable>
 #include <functional> // std::bind()
 #include <assert.h>
+#include <iostream>
 
 
 // Blocking queue based on C++11 condition variable
@@ -16,12 +17,7 @@ class BlockQ {
 	std::vector<T> data;
 public:
 
-	// it is the responsibility of the owner to make sure other threads are done using the BlockQ
-	virtual ~BlockQ(){
-		std::lock_guard<std::mutex> lock(m);
-		data.clear();
-	}
-
+	BlockQ(size_t maxSize){ /* disregard maxSize for now */ }
 	void push(const T& obj){
 		{
 			std::lock_guard<std::mutex> lock(m);

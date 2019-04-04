@@ -1,4 +1,4 @@
-#include "atomq.h"
+#include "blockq.h"
 #include "timebuff.h"
 #include "timesync.h"
 #include "network.h"
@@ -40,7 +40,7 @@ int main(int argc, char* argv[]){
 
     vector<shared_ptr<Server> > servers;
     Network network(servers);
-    Q<TBPtr> sharedQ(MAX_MSGQ_SIZE);
+    BlockQ<TBPtr> sharedQ(MAX_MSGQ_SIZE);
 
     try {
 	TimeSync timeSync(ip,port);
@@ -75,19 +75,23 @@ int main(int argc, char* argv[]){
 		}
 	}
 
+	// TODO: copy individual items only after checking subscription?
+	// network->isSubscribed(serv->getId(), timeBuff->getId())
+	// or at least check that serv->getId() != timeBuff->getId() ???
 	TBPtr timeBuff = make_shared<TimeBuffer>();
+	TBPtr data;
 	while(true){
+	// TODO: make sure network writes by local servers are not read back or privateQ is useless!
 	    if ( network.read(*timeBuff) ) {
-            	sharedQ.push(timeBuff);
+		for(auto& serv: servers){
+		    serv->getIncomingQ().push(timeBuff);
+		}
 	        timeBuff = make_shared<TimeBuffer>();
 	    }
 
-// TODO: copy individual items only after checking subscription: network->isSubscribed(serv->getId(), timeBuff->getId())
-            PrivateQ<TBPtr> privateQ; // no one else has access to it
-	    privateQ.swap(sharedQ);   // aquire all items in sharedQ
-	    if( !privateQ.empty() ){
-	        for(auto serv: servers){
-	            privateQ.copyTo( serv->getIncomingQ() );
+	    if( sharedQ.pop(data) ){
+	        for(auto& serv: servers){
+	            serv->getIncomingQ().push(data);
 	        }
 	    }
 	} // while true

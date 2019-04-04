@@ -74,8 +74,13 @@ int Server::write(int nodeIndex, const Time& time){
 
 void Server::performIO(){
     TBPtr bb;
-// if(cluster->isWaitForInput()){ ret = inQ.popWait(bb); } else { ret = inQ.pop(bb); }
-    if( inQ.pop(bb) ){ // multicast packet available
+    bool haveData;
+    if(cluster->isWaitForInput()){
+	haveData = inQ.pop(bb);
+    } else {
+	haveData = inQ.popNoWait(bb);
+    }
+    if( haveData ){ // multicast packet available
 	if( subscriptions.end() != subscriptions.find(bb->getSrcClusterId()) ){ // is cluster subscribed to it?
             cluster->write(bb);
 	}

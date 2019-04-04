@@ -24,6 +24,7 @@ public:
     virtual std::string command(const char*)=0;
     virtual int read(IWriter&)=0;
     virtual int write(const TBPtr&)=0;
+    virtual bool isWaitForInput(){ return true; } // block reads and writes when there is nothing to write
 };
 
 

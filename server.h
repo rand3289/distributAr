@@ -3,7 +3,7 @@
 
 #include "main.h"
 #include "udp.h"
-#include "atomq.h"
+#include "blockq.h"
 #include "timebuff.h"
 #include "icluster.h"
 #include "misc.h"
@@ -15,7 +15,7 @@
 class Network;
 class Subscription;
 
-typedef Q<std::shared_ptr<TimeBuffer> > BBQ;
+typedef BlockQ<std::shared_ptr<TimeBuffer> > BBQ;
 
 class Server: public IWriter {
 protected:
