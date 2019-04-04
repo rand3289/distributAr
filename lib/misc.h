@@ -24,7 +24,9 @@ std::ostream& operator<<(std::ostream& out, const std::chrono::duration<long int
 
 inline std::string ipStr(IP ip){
     std::stringstream out;
-    out << (ip>>24) << "." << ((ip>>16)&0xFF) << "." << ((ip>>8)&0xFF) << "." << (ip&0xFF);
+    // TODO: make it portable
+    // out << (ip>>24) << "." << ((ip>>16)&0xFF) << "." << ((ip>>8)&0xFF) << "." << (ip&0xFF); // bit endian
+    out << (ip&0xFF) << "." << ((ip>>8)&0xFF) << "." << ((ip>>16)&0xFF) << "." << (ip>>24); // little endian
     return out.str();
 }
 
@@ -60,6 +62,12 @@ inline IP localIP(){
     	}
 	IP ip = *reinterpret_cast<IP*>(he->h_addr_list[0]);
 	return ip;
+}
+
+// function might still come back with 127.0.0.1 if replacement is 127.0.0.1
+inline IP replaceLo(IP ip, IP replacement){
+	const static IP lip = localIP();
+	return ip == lip ? replacement : ip;
 }
 
 

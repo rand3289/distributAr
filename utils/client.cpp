@@ -1,6 +1,7 @@
 #include "main.h"
 #include "graphio.h"
 #include "udp.h"
+#include "misc.h"  // ipStr()
 #include <iostream>
 #include <sstream>
 #include <vector>
@@ -29,7 +30,8 @@ public:
     int getClusters();
     int showReply();
     void printCluster(ClusterID id){
-        cout << "\t" << id << " -> " << clusters[id].sin_addr.s_addr << ":" << clusters[id].sin_port << endl;
+	IP ip = clusters[id].sin_addr.s_addr;
+        cout << "\t" << id << " -> " << ipStr(ip) << " (" << ip << "):" << clusters[id].sin_port << endl;
     }
 };
 
@@ -144,6 +146,9 @@ int Commander::getCluster(ClusterID id){
     rs >> retCid;
     rs >> ip;
     rs >> port;
+
+    // if tracker is giving us 127.0.0.1, it does not know cluster's real IP
+    ip = replaceLo(ip, clusters[TRACKER_CLUSTER_ID].sin_addr.s_addr);
 	
     if( cmd!="POINT" || retCid!=id ){
         cerr << "Unexpected reply: '" << reply << "' Expected: 'POINT " << id << " <ip> <port>" << endl;

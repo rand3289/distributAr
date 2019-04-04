@@ -1,4 +1,5 @@
 #include "timesync.h"
+#include "misc.h"
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -66,7 +67,9 @@ void TimeSync::sync(){
                 ClusterID retCid;
                 rs >> retCid;
                 if(TIME_SERVER_ID == retCid){
-                    rs >> serverAddr.sin_addr.s_addr;
+		    IP ip;
+                    rs >> ip; // if tracker sent us 127.0.0.1 use tracker's address (they are running on one server)
+		    serverAddr.sin_addr.s_addr = replaceLo(ip, trackerAddr.sin_addr.s_addr);
 		    rs >> serverAddr.sin_port;
                 }
             } else if("DROP"==cmd){
