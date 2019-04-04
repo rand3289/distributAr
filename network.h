@@ -4,6 +4,7 @@
 #include "main.h"
 #include "udp.h"
 #include "timebuff.h"
+#include "spinlock.h"
 #include <unordered_map>
 #include <vector>
 #include <memory>
@@ -18,9 +19,8 @@ struct TimeDefault: public Time {
 class Network {
     const static IP baseMulticastIP = 0xE0000100; // 224.0.0.0 - 239.255.255.255 // must be converted to network byte order
     Udp multicast;
-    int* criticalSection = 0;
+    SpinLock spinLock; // would mutex used with std::shared_lock provide better performance?
     std::unordered_map<ClusterID, std::weak_ptr<Subscription> > subscriptions;
-//    std::unordered_map<ClusterID, Time> sequences;
     std::unordered_map<ClusterID, TimeDefault> sequences;
     std::vector<std::shared_ptr<Server> >& servers; // list of clusters to figure out subscriptions
 //    unsigned int dropped = 0; // count of dropped out of sequence packets

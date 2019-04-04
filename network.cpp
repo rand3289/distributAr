@@ -20,7 +20,7 @@ shared_ptr<Subscription>  Network::subscribe(const ClusterID local, const Cluste
 	    return make_shared<Subscription>(*this,remote);
 	}
     }
-    Guard<int> guard(criticalSection);
+    std::lock_guard<SpinLock> lock(spinLock);
     weak_ptr<Subscription> sub = subscriptions[remote];
     shared_ptr<Subscription> subscription = sub.lock();
     if(!subscription){
@@ -34,7 +34,7 @@ shared_ptr<Subscription>  Network::subscribe(const ClusterID local, const Cluste
 
 
 void Network::unsubscribe(const ClusterID remote){
-    Guard<int> guard(criticalSection);
+    std::lock_guard<SpinLock> lock(spinLock);
     auto sub = subscriptions.find(remote);
     if( subscriptions.end() == sub ){ // there is no such subscription.
 	return;

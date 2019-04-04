@@ -1,5 +1,5 @@
 SOURCES=main.cpp server.cpp network.cpp lib/timesync.cpp lib/udp.cpp lib/misc.cpp
-ONLYH=lib/blockq.h lib/guard.h lib/icluster.h lib/timebuff.h lib/main.h
+ONLYH=lib/blockq.h lib/spinlock.h lib/icluster.h lib/timebuff.h lib/main.h
 
 CFLAGS=-g -Wall -std=c++11 -I. -I./lib/
 LDFLAGS=-ldl -lpthread #-latomic # GCC __atomic_* built-ins
