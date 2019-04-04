@@ -16,14 +16,23 @@ class BlockQ {
 	std::condition_variable cv;
 	std::vector<T> data;
 public:
-
 	BlockQ(size_t maxSize){ /* disregard maxSize for now */ }
+
 	void push(const T& obj){
 		{
 			std::lock_guard<std::mutex> lock(m);
 			data.push_back(obj);
 		}
-		cv.notify_one();
+	}
+
+	void pushNotifyIf(const T& obj, bool notify = true){
+		{
+			std::lock_guard<std::mutex> lock(m);
+			data.push_back(obj);
+		}
+		if(notify){
+			cv.notify_one();
+		}
 	}
 
 	bool pop(T& obj){

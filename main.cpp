@@ -84,14 +84,16 @@ int main(int argc, char* argv[]){
 	// TODO: make sure network writes by local servers are not read back or privateQ is useless!
 	    if ( network.read(*timeBuff) ) {
 		for(auto& serv: servers){
-		    serv->getIncomingQ().push(timeBuff);
+		    bool notify = serv->getCluster().isWaitForInput();
+		    serv->getIncomingQ().pushNotifyIf(timeBuff, notify);
 		}
 	        timeBuff = make_shared<TimeBuffer>();
 	    }
 
 	    if( sharedQ.pop(data) ){
 	        for(auto& serv: servers){
-	            serv->getIncomingQ().push(data);
+		    bool notify = serv->getCluster().isWaitForInput();
+	            serv->getIncomingQ().pushNotifyIf(data, notify);
 	        }
 	    }
 	} // while true
