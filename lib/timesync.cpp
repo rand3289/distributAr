@@ -34,8 +34,8 @@ void TimeSync::calculate(const Time& t0, long long remoteUs){
     long long diff = (remoteUs - sent) - trip/2;
     
     long long deltat = __atomic_load_n(&delta, __ATOMIC_SEQ_CST);
-    cout << "TimeSync trip=" << trip << " diff=" << diff << " delta0=" << deltat;
-    deltat += ((diff-deltat)*2)/3; // slowly approach
+    cout << "  TimeSync trip=" << trip << " diff=" << diff << " delta0=" << deltat;
+    deltat += (diff-deltat)/3; // slowly approach
     __atomic_store_n(&delta, deltat, __ATOMIC_SEQ_CST);
     cout << " delta=" << deltat << endl;
 }
@@ -51,7 +51,7 @@ void TimeSync::sync(){
 
         if(size > 0){
             buff[size]=0; // in case remote did not send a null
-	    cout << "TimeSync incoming command: " << buff << endl;
+	    cout << "  TimeSync incoming command: " << buff << endl;
 
 	    // TODO: try sscanf() because it's faster.  scan command and first number right away (time or ip)
 	    istringstream rs(buff);
@@ -78,11 +78,11 @@ void TimeSync::sync(){
 	    }
         } else if( now > lastReply + std::chrono::seconds(SYNC_TIMEOUT) ){
             // have not received a server address from the tracker yet? or did the sync timeout?
-	    cout << "TimeSync requesting time server's address from tracker." << endl;
+	    cout << "  TimeSync requesting time server's address from tracker." << endl;
             udp.Write(getTimeServCmd.c_str(), getTimeServCmd.length()+1, trackerAddr);
 	    lastReply = now;
         } else if(serverAddr.sin_port && now > lastLocal + std::chrono::seconds(SYNC_INTERVAL) ){ // is address valid?
-	    cout << "TimeSync requesting time from time server." << endl; 
+	    cout << "  TimeSync requesting time from time server." << endl; 
 	    string cmd ("TIME");
 	    lastLocal = std::chrono::high_resolution_clock::now();
             udp.Write(cmd.c_str(), cmd.length()+1, serverAddr);

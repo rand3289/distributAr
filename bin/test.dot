@@ -1,6 +1,6 @@
 digraph 22 {
-1 [label=0]
-2 [label=1000]
-1 -> 2 [label=32]
-2 -> 1 [label=16]
+1025 [label=0]
+1026 [label=1000]
+1025 -> 1026 [label=32]
+1026 -> 1025 [label=16]
 }

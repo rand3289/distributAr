@@ -1,6 +1,12 @@
 #!/bin/sh
-echo starting the network by issuing commands
-echo Make sure there is an instance of a tracker, server and timeserver running!
-untils/netc add 2 10000
-untils/netc connect 2 1
-untils/netc connect 1 2
+echo Starting the network by issuing commands.
+echo Make sure there is an instance of a tracker and timeserver running locally!
+echo Plus start at least two instances of server.
+
+#this will fill the clusters with nodes
+untils/netc add 1025 10000
+untils/netc add 1026 10000
+
+#this will connect clusters to each other
+untils/netc connect 1026 1025
+untils/netc connect 1025 1026

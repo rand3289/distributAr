@@ -1,3 +1,6 @@
-echo starting network from a graph file
-echo Make sure there is an instance of a tracker, server and timeserver running!
+#!/bin/sh
+echo Starting network by "uploading" a graph file into the network.
+echo Make sure there is an instance of a tracker and timeserver running locally!
+echo Plus start at least two instances of server.
+
 utils/netc 127.0.0.1 12345 create bin/test.dot

@@ -126,8 +126,8 @@ int Udp::Read(char* buffer, int size, sockaddr_in* from) const{ // without selec
 
 int Udp::ReadSelect(char* buffer, int size, sockaddr_in* from, long timeoutMicroseconds) const {
 	struct timeval tv;
-	tv.tv_sec  = 0;
-	tv.tv_usec = timeoutMicroseconds;
+	tv.tv_sec  = timeoutMicroseconds / 1000000;
+	tv.tv_usec = timeoutMicroseconds % 1000000;
 
 	fd_set fdr,fde;    
 	FD_ZERO(&fdr);

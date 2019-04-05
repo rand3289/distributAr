@@ -57,7 +57,8 @@ int Network::verifyPacket(TimeBuffer& bb){
 	// ++dropped; // inc when it's displayed
 	// cout << "Dropping old data. now: " << now << " cutoff time: " << (time+DATA_DROP_DELAY_MS) << ' dropped ' << dropped << endl;
 	// cout << '-';
-	cout << "old data t=" << time << " now=" << now << endl;
+	cout << std::chrono::duration_cast<std::chrono::milliseconds>((now - time)).count() << "msOLD   ";
+//	cout << "old data t=" << time << " now=" << now << endl;
 	return 0;
     }
 

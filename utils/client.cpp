@@ -69,6 +69,8 @@ int Commander::createNetwork(const string& dotFileName){
         cout << "Waiting for " << nodes.size() << " clusters to join the network." << endl;
         std::this_thread::sleep_for(std::chrono::seconds(5));
 	listClusters(ids);
+	// Time server can not be used as a cluster
+	ids.erase( std::find(ids.begin(), ids.end(), TIME_SERVER_ID) );
 	cout << "Found " << ids.size() << " clusters." << endl;
 //	if(ids.end() == find(ids.begin(), ids.end(), IO_CLUSTER_ID) ){
 //	    cout << "IO cluster is NOT on line. Waiting..." << endl;
@@ -106,7 +108,8 @@ int Commander::createNetwork(const string& dotFileName){
     cout << "Populating clusters." << endl;
     for(GraphNode node: nodes) { // add nodes to each cluster
         if(node.label > 0){
-	    if(!commandWithRetry(node.id, "ADD " + to_string(node.label)) ) { return 0; } // ADD count
+//	    if(!commandWithRetry(node.id, "ADD " + to_string(node.label)) ) { return 0; } // ADD count
+	    commandWithRetry(node.id, "ADD " + to_string(node.label)); // ADD node count to cluster. Do not fail if cluster NACKs
         }
     }
 

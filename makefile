@@ -44,3 +44,4 @@ clean:
 nobin:
 	rm -f nets
 	rm -f *.so.?
+	rm -f utils/net?
