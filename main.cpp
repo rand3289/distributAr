@@ -77,23 +77,22 @@ int main(int argc, char* argv[]){
 
 	// TODO: copy individual items only after checking subscription?
 	// network->isSubscribed(serv->getId(), timeBuff->getId())
+	// if this is the only place subscription is checked, checking becomes threadsafe???
 	// or at least check that serv->getId() != timeBuff->getId() ???
+	// TODO: make sure network writes by local servers are not read back or privateQ is useless!
 	TBPtr timeBuff = make_shared<TimeBuffer>();
 	TBPtr data;
 	while(true){
-	// TODO: make sure network writes by local servers are not read back or privateQ is useless!
 	    if ( network.read(*timeBuff) ) {
 		for(auto& serv: servers){
-		    bool notify = serv->getCluster().isWaitForInput();
-		    serv->getIncomingQ().pushNotifyIf(timeBuff, notify);
+		    serv->getIncomingQ().push(timeBuff);
 		}
 	        timeBuff = make_shared<TimeBuffer>();
 	    }
 
 	    if( sharedQ.popNoWait(data) ){
 	        for(auto& serv: servers){
-		    bool notify = serv->getCluster().isWaitForInput();
-	            serv->getIncomingQ().pushNotifyIf(data, notify);
+	            serv->getIncomingQ().push(data);
 	        }
 	    }
 	} // while true

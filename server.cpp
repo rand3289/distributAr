@@ -48,7 +48,14 @@ string Server::parseCommand(char* cmd){
 
 void Server::processCommands() {
     sockaddr_in from;
-    int ret = udp.ReadSelect( reinterpret_cast<char*>(buff), buffSize, &from); // read a command non-blocking
+    int ret = 0;
+
+    if(cluster->isWaitForInput()){
+	ret = udp.Read( reinterpret_cast<char*>(buff), buffSize, &from); // read a command blocking
+    } else {
+        ret = udp.ReadSelect( reinterpret_cast<char*>(buff), buffSize, &from); // non-blocking
+    }
+
     if(ret>0){
         buff[ret] = 0; // make sure this is a null terminated string
         string reply = parseCommand(buff);
@@ -74,13 +81,7 @@ int Server::write(int nodeIndex, const Time& time){
 
 void Server::performIO(){
     TBPtr bb;
-    bool haveData;
-    if(cluster->isWaitForInput()){
-	haveData = inQ.pop(bb);
-    } else {
-	haveData = inQ.popNoWait(bb);
-    }
-    if( haveData ){ // multicast packet available
+    if( inQ.popNoWait(bb) ){ // multicast packet available
 	if( subscriptions.end() != subscriptions.find(bb->getSrcClusterId()) ){ // is cluster subscribed to it?
             cluster->write(bb);
 	}
