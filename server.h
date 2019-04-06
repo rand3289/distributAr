@@ -3,7 +3,7 @@
 
 #include "main.h"
 #include "udp.h"
-#include "blockq.h"
+#include "queue.h"
 #include "timebuff.h"
 #include "icluster.h"
 #include "misc.h"
@@ -15,12 +15,12 @@
 class Network;
 class Subscription;
 
-typedef BlockQ<std::shared_ptr<TimeBuffer> > BBQ;
+typedef FreeQueue<std::shared_ptr<TimeBuffer>, 256> BBQ; // size is time sensitive
 
 class Server: public IWriter {
 protected:
     BBQ inQ;   // incoming buffer queue
-    BBQ& outQ; // outgoing shared buffer queue
+    BBQ outQ;  // outgoing buffer queue
     std::shared_ptr<TimeBuffer> timeBuff;
     Network& network;
 
@@ -39,7 +39,7 @@ protected:
     void requestIdFromTracker();
     void performIO();
 public:
-    Server(BBQ& outgoQ, Network& net, std::string& dllName): inQ(MAX_MSGQ_SIZE), outQ(outgoQ), network(net), cluster( loadDll(dllName) ) {
+    Server(Network& net, std::string& dllName): network(net), cluster( loadDll(dllName) ) {
 	timeBuff = std::make_shared<TimeBuffer>();
 	if(cluster){
 	    timeBuff->setSrcClusterId(cluster->getId()); // if 0, first packet will be lost
@@ -47,6 +47,7 @@ public:
     }
     virtual ~Server() {}
     BBQ& getIncomingQ() { return inQ; }
+    BBQ& getOutgoingQ() { return outQ; }
     ICluster& getCluster(){ return *cluster; }
     void run(IP ip, unsigned short port, ClusterID id);
 };

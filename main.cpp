@@ -1,4 +1,4 @@
-#include "blockq.h"
+#include "queue.h"
 #include "timebuff.h"
 #include "timesync.h"
 #include "network.h"
@@ -40,7 +40,6 @@ int main(int argc, char* argv[]){
 
     vector<shared_ptr<Server> > servers;
     Network network(servers);
-    BlockQ<TBPtr> sharedQ(MAX_MSGQ_SIZE);
 
     try {
 	TimeSync timeSync(ip,port);
@@ -68,7 +67,7 @@ int main(int argc, char* argv[]){
 
 		cout<< "Starting " << clusterCount << " clusters from DLL '" << dllName << "' at address " << startID <<endl;
 		for(int i = 0; i < clusterCount; ++i){
-			shared_ptr<Server> serv = make_shared<Server>(sharedQ, network, dllName);
+			shared_ptr<Server> serv = make_shared<Server>(network, dllName);
 			servers.push_back(serv);
 			const int id = startID > 0 ? startID+i : 0; 
 			std::thread( [=](){ serv->run(ip,port,id); } ).detach(); // run servers in own threads
@@ -90,9 +89,13 @@ int main(int argc, char* argv[]){
 	        timeBuff = make_shared<TimeBuffer>();
 	    }
 
-	    if( sharedQ.popNoWait(data) ){
-	        for(auto& serv: servers){
-	            serv->getIncomingQ().push(data);
+	    for(auto& src: servers){
+		if( src->getOutgoingQ().pop(data) ){ // even if there is only one running, this will clear its out queue
+	            for(auto& serv: servers){
+			if( src->getCluster().getId() != serv->getCluster().getId() ) { // do not push its own packets to servers
+	                    serv->getIncomingQ().push(data);
+			}
+	            }
 	        }
 	    }
 	} // while true
