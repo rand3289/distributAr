@@ -96,7 +96,7 @@ void Server::requestIdFromTracker(){
 
 void Server::run(IP ip, unsigned short port, ClusterID id){
     if(!cluster){
-	cerr << "Cluster was not loaded from the DLL. Exiting!" << endl;
+	cerr << "ERROR!  Thread EXITING!  Could not load the DLL.  Make sure to 'setenv LD_LIBRARY_PATH .'" << endl;
 	return;
     }
 

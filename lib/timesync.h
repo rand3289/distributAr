@@ -21,12 +21,12 @@ public:
     void sync();
 
     static inline Time toNetwork(const Time& localTime  ){ // TODO: use std::atomic<> instead???
-	register long long dt = __atomic_load_n(&delta, __ATOMIC_SEQ_CST); // TODO: change memory order to more relaxed
+	long long dt = __atomic_load_n(&delta, __ATOMIC_SEQ_CST); // TODO: change memory order to more relaxed
 	return localTime - std::chrono::microseconds(dt);
     }
     
     static inline Time toLocal(const Time& networkTime){
-	register long long dt = __atomic_load_n(&delta, __ATOMIC_SEQ_CST); // TODO: change memory order to more relaxed
+	long long dt = __atomic_load_n(&delta, __ATOMIC_SEQ_CST); // TODO: change memory order to more relaxed
 	return networkTime + std::chrono::microseconds(dt);
     }
 };
