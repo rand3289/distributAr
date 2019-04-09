@@ -15,7 +15,7 @@
 class Network;
 class Subscription;
 
-typedef FreeQueue<std::shared_ptr<TimeBuffer>, 256> BBQ; // size is time sensitive
+typedef FreeQueue<std::shared_ptr<TimeBuffer>, MAX_MSG_Q_SIZE> BBQ; // size is time sensitive
 
 class Server: public IWriter {
 protected:
