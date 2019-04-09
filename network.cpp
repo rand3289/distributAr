@@ -51,13 +51,13 @@ int Network::verifyPacket(TimeBuffer& bb){
 	return 0;
     }
 
-    const static std::chrono::milliseconds dropDelay(DATA_DROP_DELAY_MS);
+    const static std::chrono::milliseconds dropDelay(PACKET_LIFE_TIME_MS);
     const Time time = bb.getTime(); // now that the header is parsed, get the time
     const Time now = std::chrono::high_resolution_clock::now();
     if(time + dropDelay < now){
 	// static unsigned int dropped = 0; // count of dropped out of sequence packets
 	// ++dropped; // inc when it's displayed
-	// cout << "Dropping old data. now: " << now << " cutoff time: " << (time+DATA_DROP_DELAY_MS) << ' dropped ' << dropped << endl;
+	// cout << "Dropping old data. now: " << now << " cutoff time: " << (time+PACKET_LIFE_TIME_MS) << ' dropped ' << dropped << endl;
 	// cout << '-';
 	cout << std::chrono::duration_cast<std::chrono::milliseconds>((now - time)).count() << "msOLD   ";
 //	cout << "old data t=" << time << " now=" << now << endl;
