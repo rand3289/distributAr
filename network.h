@@ -23,7 +23,6 @@ class Network {
     std::unordered_map<ClusterID, std::weak_ptr<Subscription> > subscriptions;
     std::unordered_map<ClusterID, TimeDefault> sequences;
     std::vector<std::shared_ptr<Server> >& servers; // list of clusters to figure out subscriptions
-//    unsigned int dropped = 0; // count of dropped out of sequence packets
     int verifyPacket(TimeBuffer& bb);
 public:
     Network(std::vector<std::shared_ptr<Server> >& serverS): multicast(MULTICAST_PORT, true), servers(serverS) { }

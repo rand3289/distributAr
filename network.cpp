@@ -55,6 +55,7 @@ int Network::verifyPacket(TimeBuffer& bb){
     const Time time = bb.getTime(); // now that the header is parsed, get the time
     const Time now = std::chrono::high_resolution_clock::now();
     if(time + dropDelay < now){
+	// static unsigned int dropped = 0; // count of dropped out of sequence packets
 	// ++dropped; // inc when it's displayed
 	// cout << "Dropping old data. now: " << now << " cutoff time: " << (time+DATA_DROP_DELAY_MS) << ' dropped ' << dropped << endl;
 	// cout << '-';

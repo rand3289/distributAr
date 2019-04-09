@@ -9,7 +9,7 @@ using namespace std;
 using namespace std::chrono;
 
 
-#define SYNC_INTERVAL 30   // seconds
+#define SYNC_INTERVAL 60   // seconds
 #define SYNC_TIMEOUT (3*SYNC_INTERVAL) // seconds - how long before we refresh time server's address if there is no reply
 
 long long TimeSync::delta; // static

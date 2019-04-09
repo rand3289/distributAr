@@ -75,10 +75,9 @@ int main(int argc, char* argv[]){
 	}
 
 	// TODO: copy individual items only after checking subscription?
-	// network->isSubscribed(serv->getId(), timeBuff->getId())
-	// if this is the only place subscription is checked, checking becomes threadsafe???
-	// or at least check that serv->getId() != timeBuff->getId() ???
-	// TODO: make sure network writes by local servers are not read back or privateQ is useless!
+	// network->isSubscribed(serv->getId(), timeBuff->getId()) this function is not implemented yet
+	// if this is the only place subscription is checked, checking becomes faster with reader locks
+	// TODO: make sure network writes by local servers are not read back or outgoingQ  are useless!
 	TBPtr timeBuff = make_shared<TimeBuffer>();
 	TBPtr data;
 	while(true){
@@ -92,7 +91,7 @@ int main(int argc, char* argv[]){
 	    for(auto& src: servers){
 		if( src->getOutgoingQ().pop(data) ){ // even if there is only one running, this will clear its out queue
 	            for(auto& serv: servers){
-			if( src->getCluster().getId() != serv->getCluster().getId() ) { // do not push its own packets to servers
+			if( data->getSrcClusterId() != serv->getCluster().getId() ) { // do not push its own packets to servers
 	                    serv->getIncomingQ().push(data);
 			}
 	            }
