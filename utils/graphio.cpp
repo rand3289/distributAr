@@ -94,7 +94,7 @@ void GraphIO::ParseLine(string& line, vector<GraphNode>& nodesOut, vector<GraphE
 // file is a full path to a *.dot file
 // nodesOut will contain a list of nodes and their metadata in the graph
 // edgesOut will contain a list of all edges in the graph
-bool GraphIO::Parse(string file, vector<GraphNode>& nodesOut, vector<GraphEdge>& edgesOut){
+bool GraphIO::Parse(const string& file, vector<GraphNode>& nodesOut, vector<GraphEdge>& edgesOut){
   ifstream input(file);
   string str;
   while( !getline(input,str).eof() ){
