@@ -1,9 +1,12 @@
 # distributAr
 
-**distribut**ed**Ar**chitecture is a Tiny distributed computation framework for ANNs and more!
-It provide mechanisms for sharing buffers among running threads. Threads running in a single process communicate through shared memory. Threads running in differrent processes or on different machines communicate via network multicast. Control plane is implemented with a simple text protocol.  You create a plugin dll to do whatever you want implementing ICluster interface and distributAr runs it in a single thread.  You can have as many threads as you want doing processing and as many instances of the server as you want. For now there is one tracker and one time server (should become redundant).  Connectivity among clusters is user defined. You can create a graph file and upload it into distributAr or connect clusters individually.
+**distribut**ed**Ar**chitecture is a Tiny distributed computation framework for spiking ANNs and more!
+distributAr's primary purpose is to distribute Spiking Artificial Neural Networks among multiple hosts or CPUs.  It provide mechanisms for sharing spike times among running threads. Threads running in a single process communicate through shared memory. Threads running in differrent processes or on different machines communicate via network multicast. 
 
-distributAr's primary purpose is to distribute Artificial Neural Networks among multiple hosts or CPUs.
+What sets distributar apart from other frameworks is that all machines (spike time clocks on all machines) are synchronized in time without affecting the hardware clock of individual machines.
+
+Control plane is implemented with a simple text protocol.  You create a plugin dll to do whatever you want implementing ICluster interface and distributAr runs it in a single thread.  You can have as many threads as you want doing processing and as many instances of the server as you want. For now there is one tracker and one time server (should become redundant).  Connectivity among clusters is user defined. You can create a graph file and upload it into distributAr or connect clusters individually.
+
 My speculation is that algorithms required to build an Intelligent system using ANNs would describe (A) how an individual neuron operates (detection/threshold and internal state change mechanism) (B) how neurons interconnect into groups such as cortical columns (C) how these groups are connected to each other, which might be a genetic algorithm responsible for reflexes.  distributAr operates on level (C) without creating constraints on levels A and B.  To avoid Combinatorial explosion distributAr creates subnets (clusters of neurons) with a small number of nodes. (Partition the network.)  It lets you connect some nodes in this subnet to N other subnets (not nodes in other subnets directly).  Your responsibility is to let each of those subnets (clusters) figure out the connectivity of input nodes to it's internal nodes.
 
 ### The project has a few unusual goals
