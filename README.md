@@ -1,7 +1,7 @@
 # distributAr
 
 **distribut**ed**Ar**chitecture is a Tiny distributed computation framework for spiking ANNs and more!
-distributAr's primary purpose is to distribute Spiking Artificial Neural Networks among multiple hosts or CPUs.  It provide mechanisms for sharing spike times among running threads. Threads running in a single process communicate through shared memory. Threads running in differrent processes or on different machines communicate via network multicast. 
+distributAr's primary purpose is to distribute Spiking Artificial Neural Networks among multiple hosts or CPUs.  It provides mechanisms for sharing spike times among running threads. Threads running in a single process communicate through shared memory. Threads running in differrent processes or on different machines communicate via network multicast. 
 
 What sets distributar apart from other frameworks is that all machines (spike time clocks on all machines) are synchronized in time without affecting the hardware clock of individual machines.
 
@@ -29,6 +29,7 @@ doing git clone, changing to main dir and typing make compiles 5 executable and 
 **netg** - Not required to run distributAr. Creates random network configurations for testing by creating a random graph and saving it to a DOT file.  
 http://en.wikipedia.org/wiki/Random_graph  
 http://en.wikipedia.org/wiki/DOT_language  
+Think of this graph as the DNA that defines peripheral nervous system connectivity and connectivity among regions of the brain in living systems.  
 
 ### Project parts
 Client: builds network according to the graph or allows issuing commands to tracker/server/IoServer  
