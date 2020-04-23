@@ -139,7 +139,7 @@ void Tracker::run(){
 
 int main(int argc, char* argv[]){
     if(argc != 2){
-        cout << "usage: tracker port#" << endl;
+        cout << "tracker usage: " << argv[0] << " port#" << endl;
         return 0;
     }
     unsigned short port = atoi(argv[1]);
