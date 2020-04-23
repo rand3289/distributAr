@@ -1,0 +1,15 @@
+#!/bin/sh
+
+read -p "enter tracker address or ip: " track
+read -p "enter tracker port: " port
+read -p "enter dll name: " dll
+read -p "how many instances to run? " count
+read -p "starting cluster ID? 0 to skip: " cluster
+if [ $cluster = 0 ]; then
+   cluster=""
+fi
+echo about to run nets $track $port $dll:$count:$cluster
+read -p "press enter or ctl-C to break"  null
+
+setenv LD_LIBRARY_PATH .
+nets $track $port $dll:$count:$cluster
