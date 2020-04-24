@@ -42,3 +42,7 @@ udp.*    - wrapper around UDP protocol
 Graph Generator: genrates a random graph representing a network structure  
 serial.h - provides serialization primitives  
 
+Some real time Spiking ANN simulations such as sound localization using interaural time difference (ITD) might require a high resolution clock.   https://en.wikipedia.org/wiki/Interaural_time_difference   reports: "The normal human threshold for detection of an ITD is up to a time difference of 10μs (microseconds)".  It is something to be aware of since it is an indication of the time precision required to simulate biological neural networks in real time.
+
+My framework does not provide sufficient clock synchronization (microseconds) since I currently perform time synchronization in software.  If I perform all Input / Output (IO) through a single processor, and modify the framework a bit, I do not have to synchronize the clocks at all since spikes will travel through the rest of ANN as timestamps from the processor doing the IO.  I can also fix it by using hardware based Precision Time Protocol (PTP) which allows for clock synchronization down to 8 nano seconds over 100Mbit Ethernet.
+
