@@ -22,8 +22,8 @@ struct GraphEdge{
 
 class GraphIO{
 	std::fstream file;
-	void ParseLine(string& line, vector<GraphNode>& nodesOut, vector<GraphEdge>& edgesOut);
-	int ParseLabel(vector<string>& tokens, unsigned int start);
+	static void ParseLine(string& line, vector<GraphNode>& nodesOut, vector<GraphEdge>& edgesOut);
+	static int ParseLabel(vector<string>& tokens, unsigned int start);
 public:
 	GraphIO();
 	~GraphIO();
@@ -31,7 +31,7 @@ public:
 	void WriteNode(unsigned int id, int label);
 	void WriteEdge(unsigned int from, unsigned int to, int label);
 	void CloseGraph();
-	bool Parse(const string& file, vector<GraphNode>& nodesOut, vector<GraphEdge>& edgesOut);
+	static bool Parse(const string& file, vector<GraphNode>& nodesOut, vector<GraphEdge>& edgesOut);
 };
 
 

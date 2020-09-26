@@ -56,8 +56,7 @@ int Commander::createNetwork(const string& dotFileName){
     cout << "Creating network according to '" << dotFileName <<  "' DOT graph file." << endl;
     vector<GraphNode> nodes;
     vector<GraphEdge> edges;
-    GraphIO graph;
-    bool ok = graph.Parse(dotFileName,nodes, edges);
+    bool ok = GraphIO::Parse(dotFileName,nodes, edges);
     cout << "Parsed " << dotFileName << " result=" << (ok?"ok ": "failed ") << " nodes=" << nodes.size() << " edges=" << edges.size() << endl;
     if(!ok){
         return -1;

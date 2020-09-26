@@ -57,8 +57,7 @@ void optimizePartitions(vector<vector<Vertex>>& nodes){
 void loadGraph(const string& filename, vector<vector<Vertex>>& verts){
     vector<GraphNode> nodes;
     vector<GraphEdge> edges;
-    GraphIO gio;
-    gio.Parse(filename, nodes, edges);
+    GraphIO::Parse(filename, nodes, edges);
 
     for(unsigned int i = 0; i < nodes.size(); ++i){
         vector<Vertex>& v = verts[i%verts.size()];

@@ -97,11 +97,7 @@ void GraphIO::ParseLine(string& line, vector<GraphNode>& nodesOut, vector<GraphE
 bool GraphIO::Parse(const string& file, vector<GraphNode>& nodesOut, vector<GraphEdge>& edgesOut){
   ifstream input(file);
   string str;
-  while( !getline(input,str).eof() ){
-    if( input.bad() ){
-        cerr << "Error parsing file. Can not read from file." << endl;
-        return false;
-    }
+  while( getline(input,str) ){
     try{
       ParseLine(str,nodesOut, edgesOut);
     } catch (string& err){
