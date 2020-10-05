@@ -54,9 +54,8 @@ void optimizePartitions(vector<vector<Vertex>>& nodes){
 }
 
 
-void loadGraph(const string& filename, vector<vector<Vertex>>& verts){
+void loadGraph(const string& filename, vector<vector<Vertex>>& verts, vector<GraphEdge>& edges){
     vector<GraphNode> nodes;
-    vector<GraphEdge> edges;
     GraphIO::Parse(filename, nodes, edges);
 
     for(unsigned int i = 0; i < nodes.size(); ++i){
@@ -69,6 +68,24 @@ void loadGraph(const string& filename, vector<vector<Vertex>>& verts){
             }
         }
     }
+}
+
+
+// save new optimized graph.  Write partitions to labels for each node.
+string saveGraph(vector<vector<Vertex>>& verts, vector<GraphEdge>& edges){
+    GraphIO graph;
+    string name = graph.InitGraph();
+    for(size_t i = 0; i < verts.size(); ++i){
+        auto vgroup = verts[i];
+        for(auto v: vgroup){
+            graph.WriteNode(v.id, i); // i(group) becomes label
+	}
+    }
+    for(auto e: edges){
+        graph.WriteEdge(e.from, e.to, e.label);
+    }
+    graph.CloseGraph();
+    return name;
 }
 
 
@@ -119,7 +136,8 @@ int main(int argc, char* argv[]){
 
     cout << "Loading graph from " << dotFileName << endl;
     vector<vector<Vertex>> nodes(groupCount);
-    loadGraph(dotFileName, nodes);
+    vector<GraphEdge> edges;
+    loadGraph(dotFileName, nodes, edges);
 
     for(unsigned int i=0; i < nodes.size(); ++i){
         if(nodes[i].size() < 1){
@@ -140,4 +158,7 @@ int main(int argc, char* argv[]){
     int runtime = duration_cast<seconds>(system_clock::now() - start).count();
     cout << "Performed "<< optCount << " optimizations in " << runtime << " seconds." << endl;
     printPartitions(nodes);
+    cout << "Saving optimized graph." << endl;
+    string graphName = saveGraph(nodes,edges);
+    cout << "Graph saved to " << graphName << endl;
 }
