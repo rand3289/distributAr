@@ -12,7 +12,7 @@ EXECUTABLE=nets
 all: $(EXECUTABLE)  so  utils
 
 $(EXECUTABLE): $(OBJECTS)
-	$(CC) $(LDFLAGS) $(OBJECTS) -o $(EXECUTABLE)
+	$(CC) $(OBJECTS) -o $(EXECUTABLE) $(LDFLAGS)
 
 .cpp.o: $(SOURCES) $(HEADERS) $(ONLYH)
 	$(CC) -c $(CFLAGS) $< -o $@

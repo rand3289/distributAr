@@ -1,7 +1,7 @@
 // This is a simple brute force graph partitioning program.
 // Use it to split connected computing nodes (vertices) into groups.
-// Each group will run on a single CPU and minimize the number of connections(edges) among the groups.
-// This way communications among most computing nodes will be done on a local host.
+// Each group will run on a single machine and minimize the number of connections(edges) among the groups.
+// This way communications among most computing nodes will be done in memory on a local host.
 
 #include <iostream>
 #include <vector>
