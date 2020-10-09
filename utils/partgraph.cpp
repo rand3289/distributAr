@@ -123,7 +123,8 @@ int kbhit(){ // from https://www.flipcode.com/archives/_kbhit_for_Linux.shtml
 
 int main(int argc, char* argv[]){
     if(argc < 3){
-        cout << "Usage: " << argv[0] << " filename.dot #partitions" << endl;
+        cout << "distributAr (distributed Architecture framework) graph optimizer" << endl;
+        cout << "usage: " << argv[0] << " filename.dot #partitions" << endl;
 	return 1;
     }
     string dotFileName = argv[1];

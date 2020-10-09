@@ -53,7 +53,8 @@ void TimeServ::run(){
 
 int main(int argc, char* argv[]){
 	if(argc<3){
-            cout << "usage: netw  <tracker addr/ip>  <tracker port#>" << endl;
+            cout << "distributAr (distributed Architecture framework) time server" << endl;
+            cout << "usage: " << argv[0] << " <tracker addr/ip>  <tracker port#>" << endl;
             return 0;
 	}
 

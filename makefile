@@ -2,7 +2,7 @@ SOURCES=main.cpp server.cpp network.cpp lib/timesync.cpp lib/udp.cpp lib/misc.cp
 ONLYH=lib/blockq.h lib/spinlock.h lib/icluster.h lib/timebuff.h lib/main.h
 
 CFLAGS=-g -Wall -std=c++11 -I. -I./lib/
-LDFLAGS=-ldl -lpthread #-latomic # GCC __atomic_* built-ins
+LDFLAGS=-ldl -lpthread #-latomic # GCC __atomic_* built-ins # dynamic loader and pthread libs
 CC=g++
 
 OBJECTS=$(SOURCES:.cpp=.o)
@@ -17,7 +17,7 @@ $(EXECUTABLE): $(OBJECTS)
 .cpp.o: $(SOURCES) $(HEADERS) $(ONLYH)
 	$(CC) -c $(CFLAGS) $< -o $@
 
-.PHONY: so utils
+.PHONY: so utils clean nobin # tell make these are not real files to be built
 
 so:
 	@echo "----------------------------------------------------------"

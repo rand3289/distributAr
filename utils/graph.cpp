@@ -64,7 +64,8 @@ void Connector::GenerateParameters(unsigned int networkSize, int& connectivity, 
 
 int main(int argc, char* argv[]){
 	if(argc != 2){
-		cout << "usage: graph <# of nodes>" << endl;
+                cout << "distributAr (distributed Architecture framework) random graph generator" << endl;
+		cout << "usage: " << argv[0] << " <# of nodes>" << endl;
 		return 0;
 	}
 

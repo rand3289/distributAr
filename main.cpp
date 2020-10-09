@@ -16,7 +16,8 @@ using namespace std;
 
 int main(int argc, char* argv[]){
     if(argc<4){
-        cout << "usage: nets  <tracker addr/ip>  <tracker port#>  <library:N:C>" << endl;
+        cout << "distributAr (distributed Architecture framework) server" << endl;
+        cout << "usage: " << argv[0] << " <tracker addr/ip>  <tracker port#>  <library:N:C>" << endl;
         cout << "library:N:C - load N instances of 'library' starting with ClusterID C" << endl;
         return 0;
     }

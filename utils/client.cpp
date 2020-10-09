@@ -234,7 +234,8 @@ void validateArgc(int argc, int minArgc){
 
 int main(int argc, char* argv[]){
     if( argc<4 ){
-        cout << "netc  trackerIP  trackerPort command <parameters>" << endl;
+        cout << "distributAr (distributed Architecture framework) client" << endl;
+        cout << "usage: " << argv[0] << " trackerIP  trackerPort command <parameters>" << endl;
         cout << "supported commands are:" << endl;
         cout << "\tlist - list all clusters reporting to tracker" << endl;
         cout << "\tcreate graphFileName - build the network according to *.dot file" << endl;
