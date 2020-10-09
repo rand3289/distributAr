@@ -26,8 +26,7 @@ doing git clone, changing to main dir and typing "make" compiles 6 executable an
 **nett** - tracker.  Each server thread registers with the tracker and gets a "cluster id". Client gets info from tracker.  
 **netw** - time server facilitates synchronization of time among server instances  
 **netc** - client to send commands to tracker and server instances  
-**netg** - Not required to run distributAr. Creates random network configurations for testing by creating a random graph and saving it to a DOT file.  
-Think of this graph as the DNA that defines peripheral nervous system connectivity and connectivity among regions of the brain in living systems.  
+**netg** - Not required to run distributAr. Creates random network configurations for testing by creating a random graph and saving it to a DOT file.  Think of this graph as the DNA that defines peripheral nervous system connectivity and connectivity among regions of the brain in living systems.  
 **neto** - Not required to run distributAr.  Partitions a graph file (*.dot) to run on N clusters and optimizes the cluster CPU affinity to reduce the number of hyperedges between the clusters.  Node labels in the output file specify the groups.  
 
 http://en.wikipedia.org/wiki/Random_graph  
