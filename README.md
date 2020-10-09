@@ -19,7 +19,7 @@ This project requires only a C++11 compliant compiler.
 
 ### Building distributAr
 
-doing git clone, changing to main dir and typing make compiles 5 executable and one library:
+doing git clone, changing to main dir and typing "make" compiles 6 executable and one library:
 
 **libdummy.so.1**  - a dummy ANN (cluster of neurons) that sends and receives some random data  
 **nets** - main server.  Loads libdummy.so.1  then connects to tracker and waits for client commands  
@@ -27,9 +27,12 @@ doing git clone, changing to main dir and typing make compiles 5 executable and 
 **netw** - time server facilitates synchronization of time among server instances  
 **netc** - client to send commands to tracker and server instances  
 **netg** - Not required to run distributAr. Creates random network configurations for testing by creating a random graph and saving it to a DOT file.  
+Think of this graph as the DNA that defines peripheral nervous system connectivity and connectivity among regions of the brain in living systems.  
+**neto** - Not required to run distributAr.  Partitions a graph file (*.dot) to run on N clusters and optimizes the cluster CPU affinity to reduce the number of hyperedges between the clusters.  Node labels in the output file specify the groups.  
+
 http://en.wikipedia.org/wiki/Random_graph  
 http://en.wikipedia.org/wiki/DOT_language  
-Think of this graph as the DNA that defines peripheral nervous system connectivity and connectivity among regions of the brain in living systems.  
+http://en.wikipedia.org/wiki/Graph_partition  
 
 ### Project parts
 Client: builds network according to the graph or allows issuing commands to tracker/server/IoServer  
@@ -44,5 +47,5 @@ serial.h - provides serialization primitives
 
 Some real time Spiking ANN simulations such as sound localization using interaural time difference (ITD) might require a high resolution clock.   https://en.wikipedia.org/wiki/Interaural_time_difference   reports: "The normal human threshold for detection of an ITD is up to a time difference of 10μs (microseconds)".  It is something to be aware of since it is an indication of the time precision required to simulate biological neural networks in real time.
 
-My framework does not provide sufficient clock synchronization (microseconds) since I currently perform time synchronization in software.  If I perform all Input / Output (IO) through a single processor, and modify the framework a bit, I do not have to synchronize the clocks at all since spikes will travel through the rest of ANN as timestamps from the processor doing the IO.  I can also fix it by using hardware based Precision Time Protocol (PTP) which allows for clock synchronization down to 8 nano seconds over 100Mbit Ethernet.
+My framework does not provide sufficient clock synchronization (microseconds) since I currently perform time synchronization in software.  If I perform all Input / Output (IO) through a single processor, and modify the framework a bit, I do not have to synchronize the clocks at all since spikes will travel through the rest of ANN as timestamps from the processor doing the IO.  I can also fix it by using hardware based Precision Time Protocol (PTP) which allows for clock synchronization down to nano seconds over 100Mbit Ethernet.  
 
