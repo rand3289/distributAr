@@ -31,7 +31,6 @@ public:
     inline static ClusterID multicastToId(IP multiGroup){ return ntohl(multiGroup)- baseMulticastIP; }
 
     // when all references to Subscription go out of scope, subscription to the multicast group is deleted
-    bool isSubscribed(ClusterID local, ClusterID remote){ return true; } // TODO!!!
     std::shared_ptr<Subscription> subscribe(ClusterID local, ClusterID remote);
     void unsubscribe(ClusterID remote);
 
@@ -48,7 +47,6 @@ class Subscription{
 public:
     Subscription(Network& net, ClusterID id): network(net), cluster(id) {}
     ~Subscription(){ network.unsubscribe(cluster); }
-    inline ClusterID whichCluster(){ return cluster; }
 };
 
 

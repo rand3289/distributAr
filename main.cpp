@@ -76,7 +76,6 @@ int main(int argc, char* argv[]){
 	}
 
 	// TODO: copy individual items only after checking subscription?
-	// network->isSubscribed(serv->getId(), timeBuff->getId()) this function is not implemented yet
 	// if this is the only place subscription is checked, checking becomes faster with reader locks
 	// TODO: make sure network writes by local servers are not read back or outgoingQ  are useless!
 	TBPtr timeBuff = make_shared<TimeBuffer>();
