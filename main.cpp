@@ -84,7 +84,7 @@ int main(int argc, char* argv[]){
                 network.getSubscriptions(subscribers); // this locks!!!
             }
 
-	    if ( network.read(*timeBuff) ) {
+	    if ( network.readVerify(*timeBuff) ) {
 	        for(Server* s: subscribers[timeBuff->getSrcClusterId()] ){
 		    s->getIncomingQ().push(timeBuff); // lock-less
 		}

@@ -79,7 +79,10 @@ void Network::unsubscribe(const ClusterID remote){
 }
 
 
-int Network::verifyPacket(TimeBuffer& bb){
+int Network::readVerify(TimeBuffer& bb){
+    int ret = read(bb);
+    if(!ret) { return 0; }
+
     bb.prepareRead();		// convert from network time
     if( bb.sizeData() <= 0){	// empty // TODO: check max size???
 	return 0;
@@ -94,9 +97,7 @@ int Network::verifyPacket(TimeBuffer& bb){
 	// static unsigned int dropped = 0; // count of dropped out of sequence packets
 	// ++dropped; // inc when it's displayed
 	// cout << "Dropping old data. now: " << now << " cutoff time: " << (time+PACKET_LIFE_TIME_MS) << ' dropped ' << dropped << endl;
-	// cout << '-';
 	cout << std::chrono::duration_cast<std::chrono::milliseconds>((now - time)).count() << "msOLD   ";
-//	cout << "old data t=" << time << " now=" << now << endl;
 	return 0;
     }
 
@@ -113,7 +114,7 @@ int Network::verifyPacket(TimeBuffer& bb){
 //a	if(t == uninitTime){ t = time; }
 //	cout << '~'; cout.flush();
 	cout << "packet's timestamp is out of order" << endl;
-	t = time;
+//???	t = time;
 	return 0;
     }
     t = time;
