@@ -1,6 +1,7 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <iomanip>
 #include <chrono>
 using namespace std::chrono;
 #include <string.h> // strdup()
@@ -12,16 +13,18 @@ GraphIO::GraphIO(){}
 GraphIO::~GraphIO(){ CloseGraph(); }
 
 
-string GraphIO::InitGraph(){
-	stringstream date;
-	date << std::chrono::system_clock::now().time_since_epoch().count();
-	file.open((date.str()+".dot").c_str(), ios_base::out);
+string GraphIO::InitGraph(){ // returns graph file name
+    stringstream gname; // create a graph name from current time
+    const long long yr20 = (2020-1970)*365*  24*60*60  *1000L; // approximate milliseconds 1970-2020
+    long long now = duration_cast<milliseconds> (std::chrono::system_clock::now().time_since_epoch()).count();
+    long long dt = (now - yr20) / 100; // tenth of a second
+    gname << dt/100000 << "_" << std::setfill('0') << std::setw(5) << dt%100000;
+    const string fname = gname.str() + ".dot";
 
-	file << "digraph ";
-	file << date.str();
-	file << " {" << endl;
-
-	return date.str();
+    file.open(fname.c_str(), ios_base::out);
+    file << "digraph " << gname.str() << " {" << endl;
+    file.flush();
+    return fname;
 }
 
 
