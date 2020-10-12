@@ -4,43 +4,77 @@
 #include <chrono>
 #include <iostream>
 #include <mutex> // lock_quard
-
-//1#include <fstream> // FOR DEBUGGING ONLY !!!
-//1#include <sstream>
-//1#include <string>
-//1#include <thread>
-
 using namespace std;
 
 
-shared_ptr<Subscription>  Network::subscribe(const ClusterID local, const ClusterID remote) {
-    for(auto server: servers){ // check if they are local - no need to join multicast
+void Network::getSubscriptions(unordered_map<ClusterID, vector<Server*> >& subscribers){
+    std::lock_guard<SpinLock> lock(spinLock);
+    if(!dirty){ return; }
+    dirty = false;
+    subscribers.clear();
+
+    for(auto i: subscriptions){
+        ClusterID key1 = i.first;
+        for(auto j: i.second){
+	    ClusterID key2 = j->getClusterID();
+            for(auto& serv: servers){ // for every server
+                const ClusterID id = serv->getCluster().getId();
+                if(id == key2){
+                    subscribers[key1].push_back(&*serv);
+                }
+            }
+        }
+    }
+}
+
+
+void  Network::subscribe(const ClusterID local, const ClusterID remote) {
+    std::lock_guard<SpinLock> lock(spinLock);
+    dirty = true;
+
+    for(auto i: subscriptions[local]){
+        if( remote == i->getClusterID() ){ return; } // already connected
+    }
+
+    auto sub = make_shared<Subscription>(*this,remote);
+    subscriptions[local].push_back(sub);
+
+    for(auto server: servers){ // if remote is in the same process, no need to join a multicast group
 	if( remote == server->getCluster().getId() ){
-	    return make_shared<Subscription>(*this,remote);
+            return;
 	}
     }
+
+    IP ip = idToMulticast(remote);
+    cout << "Cluster " << local <<  " is connecting to " << remote << " (IP:" << ip << ")" << endl;
+    multicast.JoinMulticast(ip);
+}
+
+
+// when all references to Subscription go out of scope, subscription to the multicast group is deleted
+void Network::unsubscribe(const ClusterID local, const ClusterID remote){
     std::lock_guard<SpinLock> lock(spinLock);
-    weak_ptr<Subscription> sub = subscriptions[remote];
-    shared_ptr<Subscription> subscription = sub.lock();
-    if(!subscription){
-	subscription.reset(new Subscription(*this,remote));
-        IP ip = idToMulticast(remote);
-        cout << "Cluster " << local <<  " is connecting to " << remote << " (IP:" << ip << ")" << endl;
-	multicast.JoinMulticast(ip);
+    dirty = true;
+
+    auto all = subscriptions[local];
+    for(auto i = all.begin(); i!= all.end(); ++i){
+        if(remote == (*i)->getClusterID() ){
+	    all.erase(i); // erase multicast subscription for cluster "local" only
+	    return;
+	}
     }
-    return subscription;
 }
 
 
 void Network::unsubscribe(const ClusterID remote){
     std::lock_guard<SpinLock> lock(spinLock);
-    auto sub = subscriptions.find(remote);
-    if( subscriptions.end() == sub ){ // there is no such subscription.
-	return;
+    for(auto server: servers){ // if remote is in the same process, no need to leave a multicast group
+	if( remote == server->getCluster().getId() ){
+            return;
+	}
     }
     IP ip = idToMulticast(remote);
     multicast.LeaveMulticast(ip);
-    subscriptions.erase(sub); // subscriptions.erase(remote);
     cout << "All clusters disconnected from cluster " << remote << " (IP:" << ip << ")" << endl;
 }
 

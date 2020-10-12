@@ -19,13 +19,13 @@ string Server::parseCommand(char* cmd){
     ss >> param1;
 
     if(command == "CONNECT"){
-	subscriptions[param1] = network.subscribe(cluster->getId(), param1);
 	IP ip = Network::idToMulticast(param1);
 	cout << "Connecting to cluster " << ipStr(param1) << " (IP:" << ip << ")" << endl;
+	network.subscribe(cluster->getId(), param1);
 	return "ACK";
     } else if(command == "DROP"){
 	cout << "Dropping connection to cluster " << param1 << endl;
-	subscriptions.erase(param1); // when references to subscription from all servers are gone, subscription will be deleted
+        network.unsubscribe(cluster->getId(), param1);
 	return "ACK";
     } else if(command == "RUN"){
 	ClusterID old = cluster->getId();
@@ -76,9 +76,7 @@ void Server::performIO(){
     TBPtr bb;
     // TODO: need to sleep here if queue is empty and isWaitForInput() and be notified when queue is not empty
     if( inQ.pop(bb) ){ // multicast packet available
-	if( subscriptions.end() != subscriptions.find(bb->getSrcClusterId()) ){ // is cluster subscribed to it?
-            cluster->write(bb);
-	}
+        cluster->write(bb);
     }
 
     if( cluster->getId() > 0 ){ // can send data only if it has a clusterID. Reading is different: it has to clear it's incoming queue

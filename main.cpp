@@ -75,28 +75,30 @@ int main(int argc, char* argv[]){
 		}
 	}
 
-	// TODO: copy individual items only after checking subscription?
-	// if this is the only place subscription is checked, checking becomes faster with reader locks
-	// TODO: make sure network writes by local servers are not read back or outgoingQ  are useless!
+	// TODO: make sure network writes by local servers are not read back or outgoingQs are useless!
 	TBPtr timeBuff = make_shared<TimeBuffer>();
 	TBPtr data;
-	while(true){
+	unordered_map<ClusterID, vector<Server*> > subscribers;
+	for(int i=0; true; ++i){
+            if(0 == i%1000){ // once in a while ( as servers join and leave multicast groups ) rebuild subscribers
+                network.getSubscriptions(subscribers); // this locks!!!
+            }
+
 	    if ( network.read(*timeBuff) ) {
-		for(auto& serv: servers){
-		    serv->getIncomingQ().push(timeBuff);
+	        for(Server* s: subscribers[timeBuff->getSrcClusterId()] ){
+		    s->getIncomingQ().push(timeBuff); // lock-less
 		}
 	        timeBuff = make_shared<TimeBuffer>();
 	    }
 
-	    for(auto& src: servers){
-		if( src->getOutgoingQ().pop(data) ){ // even if there is only one running, this will clear its out queue
-	            for(auto& serv: servers){
-			if( data->getSrcClusterId() != serv->getCluster().getId() ) { // do not push its own packets to servers
-	                    serv->getIncomingQ().push(data);
-			}
-	            }
-	        }
-	    }
+	    for(auto& src: servers){ // this will clear all "out queues" for all servers
+		if( src->getOutgoingQ().pop(data) ){
+	            for(Server* s: subscribers[data->getSrcClusterId()] ){
+		        s->getIncomingQ().push(data); // lock-less
+		    }
+                }
+            }
+
 	} // while true
 
     } catch (const char* ex){

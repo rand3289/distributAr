@@ -28,7 +28,6 @@ protected:
     std::shared_ptr<ICluster> cluster;
     sockaddr_in tracker;
     sockaddr_in mCastGrp; // Multicast address - IP depends on ClusterID
-    std::unordered_map<ClusterID, std::shared_ptr<Subscription> > subscriptions;
 
     char buff[0xFFFF]; // command buffer
     const unsigned int buffSize = sizeof(buff)-1; // leave space for NULL termination
