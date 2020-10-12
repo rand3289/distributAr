@@ -10,7 +10,6 @@
 #include <memory>
 
 class Server;
-class Subscription;
 
 struct TimeDefault: public Time {
     TimeDefault(): Time(std::chrono::high_resolution_clock::time_point::min()) {}
@@ -34,7 +33,7 @@ public:
 class Network: public Multicast {
     SpinLock spinLock; // would mutex used with std::shared_lock provide better performance?
     bool dirty = false; // flag: subscriptions were updates since getSubscriptions() was called
-    std::unordered_map<ClusterID, std::vector<std::shared_ptr<Subscription> > > subscriptions;
+    std::unordered_map<ClusterID, std::vector<ClusterID> > subscriptions;
     std::unordered_map<ClusterID, TimeDefault> sequences;
     std::vector<std::shared_ptr<Server> >& servers; // list of local clusters to figure out subscriptions
 public:
@@ -42,19 +41,8 @@ public:
     int readVerify(TimeBuffer& tb);
 
     void subscribe(ClusterID local, ClusterID remote); // subscribe to a multicast group
-    void unsubscribe(ClusterID remote); // removes multicast subscription
-    void unsubscribe(ClusterID local, const ClusterID remote); // mark multicast subscription for delete
+    void unsubscribe(ClusterID local, ClusterID remote); // remove or mark multicast subscription for delete
     void getSubscriptions(std::unordered_map<ClusterID, std::vector<Server*> >& subscribers);
-};
-
-
-class Subscription {
-    Network& network;
-    ClusterID cluster;
-public:
-    Subscription(Network& net, ClusterID id): network(net), cluster(id) {}
-    ~Subscription(){ network.unsubscribe(cluster); }
-    ClusterID getClusterID(){ return cluster; }
 };
 
 

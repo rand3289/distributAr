@@ -4,6 +4,7 @@
 #include <chrono>
 #include <iostream>
 #include <mutex> // lock_quard
+#include <algorithm>
 using namespace std;
 
 
@@ -13,14 +14,12 @@ void Network::getSubscriptions(unordered_map<ClusterID, vector<Server*> >& subsc
     dirty = false;
     subscribers.clear();
 
-    for(auto i: subscriptions){
-        ClusterID key1 = i.first;
-        for(auto j: i.second){
-	    ClusterID key2 = j->getClusterID();
-            for(auto& serv: servers){ // for every server
-                const ClusterID id = serv->getCluster().getId();
-                if(id == key2){
-                    subscribers[key1].push_back(&*serv);
+    for(auto i: subscriptions){          // for every local
+        ClusterID local = i.first;
+        for(ClusterID remote: i.second){ // for every remote 
+            for(auto& serv: servers){    // for every server
+                if(local == serv->getCluster().getId() ){
+                    subscribers[remote].push_back(&*serv);
                 }
             }
         }
@@ -32,12 +31,11 @@ void  Network::subscribe(const ClusterID local, const ClusterID remote) {
     std::lock_guard<SpinLock> lock(spinLock);
     dirty = true;
 
-    for(auto i: subscriptions[local]){
-        if( remote == i->getClusterID() ){ return; } // already connected
+    for(ClusterID i: subscriptions[local]){
+        if( remote == i ){ return; } // already connected
     }
 
-    auto sub = make_shared<Subscription>(*this,remote);
-    subscriptions[local].push_back(sub);
+    subscriptions[local].push_back(remote);
 
     for(auto server: servers){ // if remote is in the same process, no need to join a multicast group
 	if( remote == server->getCluster().getId() ){
@@ -51,31 +49,29 @@ void  Network::subscribe(const ClusterID local, const ClusterID remote) {
 }
 
 
-// when all references to Subscription go out of scope, subscription to the multicast group is deleted
 void Network::unsubscribe(const ClusterID local, const ClusterID remote){
     std::lock_guard<SpinLock> lock(spinLock);
     dirty = true;
 
-    auto all = subscriptions[local];
-    for(auto i = all.begin(); i!= all.end(); ++i){
-        if(remote == (*i)->getClusterID() ){
-	    all.erase(i); // erase multicast subscription for cluster "local" only
-	    return;
-	}
+    vector<ClusterID>& all = subscriptions[local];
+    all.erase( std::find(all.begin(), all.end(), remote) );  // erase multicast subscription for cluster "local" only
+
+    for(auto i: subscriptions){ // any other local clusters subscribe to remote???
+        auto conns = i.second;
+        if(conns.end() != std::find(conns.begin(), conns.end(), remote) ){
+            return;
+        }
     }
-}
 
-
-void Network::unsubscribe(const ClusterID remote){
-    std::lock_guard<SpinLock> lock(spinLock);
     for(auto server: servers){ // if remote is in the same process, no need to leave a multicast group
 	if( remote == server->getCluster().getId() ){
             return;
 	}
     }
+
     IP ip = idToMulticast(remote);
     multicast.LeaveMulticast(ip);
-    cout << "All clusters disconnected from cluster " << remote << " (IP:" << ip << ")" << endl;
+    cout << "All local clusters disconnected from cluster " << remote << " (IP:" << ip << ")" << endl;
 }
 
 

@@ -98,8 +98,7 @@ int main(int argc, char* argv[]){
 		    }
                 }
             }
-
-	} // while true
+	} // for(true)
 
     } catch (const char* ex){
         cerr << "Exception caught: " << ex << ". Exiting" << endl;
