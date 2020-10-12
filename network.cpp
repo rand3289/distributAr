@@ -54,6 +54,8 @@ int Network::verifyPacket(TimeBuffer& bb){
     const static std::chrono::milliseconds dropDelay(PACKET_LIFE_TIME_MS);
     const Time time = bb.getTime(); // now that the header is parsed, get the time
     const Time now = std::chrono::high_resolution_clock::now();
+// TODO: make a field and insert a local timestamp into each packet read from the network ???
+
     if(time + dropDelay < now){
 	// static unsigned int dropped = 0; // count of dropped out of sequence packets
 	// ++dropped; // inc when it's displayed
