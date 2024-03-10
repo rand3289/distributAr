@@ -40,12 +40,7 @@ protected:
     void requestIdFromTracker();
     void performIO();
 public:
-    Server(Network& net, std::string& dllName): network(net), cluster( loadDll(dllName) ) {
-        timeBuff = std::make_shared<TimeBuffer>();
-        if(cluster){
-            timeBuff->setSrcClusterId(cluster->getId()); // if 0, first packet will be lost
-        }
-    }
+    Server(Network& net, std::string& dllName): timeBuff(std::make_shared<TimeBuffer>()), network(net), cluster( loadDll(dllName) ) {}
     virtual ~Server() {}
     BQIn& getIncomingQ() { return inQ; }
     BQOut& getOutgoingQ() { return outQ; }

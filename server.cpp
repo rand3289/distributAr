@@ -123,21 +123,21 @@ void Server::run(IP ip, unsigned short port, ClusterID id){
 
     try{
         while(true){
-        requestIdFromTracker();
+            requestIdFromTracker();
             for(int i = UPDATE_PERIOD; i; --i){
-            processCommands();
-            for(int j = commandPeriod; j; --j){
-            performIO();
+                processCommands();
+                for(int j = commandPeriod; j; --j){
+                    performIO();
+                }
             }
-            }
-        // adjust the number of times we performIO() before processingCommand() by  matching trackerUpdateRate
-        Time now = std::chrono::high_resolution_clock::now();
-        double dt = std::chrono::duration_cast<std::chrono::milliseconds>(now - prev).count();
-        double ratio = trackerUpdateRate/dt;
-        commandPeriod = (commandPeriod + ratio*(double)commandPeriod)/2;
-        commandPeriod = commandPeriod > 0 ? commandPeriod : 1;
-        cout << "dt=" << dt << "ms ratio=" << ratio << " commandPeriod=" << commandPeriod << endl;
-        prev = now;
+            // adjust the number of times we performIO() before processingCommand() by  matching trackerUpdateRate
+            Time now = std::chrono::high_resolution_clock::now();
+            double dt = std::chrono::duration_cast<std::chrono::milliseconds>(now - prev).count();
+            double ratio = trackerUpdateRate/dt;
+            commandPeriod = (commandPeriod + ratio*(double)commandPeriod)/2;
+            commandPeriod = commandPeriod > 0 ? commandPeriod : 1;
+            cout << "dt=" << dt << "ms ratio=" << ratio << " commandPeriod=" << commandPeriod << endl;
+            prev = now;
         }
     } catch (const char* ex){
         cerr << "Exception caught: " << ex << ". Exiting" << endl;
