@@ -4,13 +4,13 @@
 #ifndef INCLUDED_ICLUSTER_H
 #define INCLUDED_ICLUSTER_H
 
-#include "timebuff.h"	// TBPtr
-#include "main.h"	// ClusterID
+#include "timebuff.h" // TBPtr
+#include "main.h"     // ClusterID
 
 
 struct IWriter {
-	virtual int write(int nodeIndex, const Time& t) = 0;
-	// virtual int read(const Time&); // TODO: implement instead of passing TBPtr to write()
+    virtual int write(int nodeIndex, const Time& t) = 0;
+    // virtual int read(const Time&); // TODO: implement instead of passing TBPtr to write()
 };
 
 

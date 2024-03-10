@@ -51,40 +51,40 @@ void TimeSync::sync(){
 
         if(size > 0){
             buff[size]=0; // in case remote did not send a null
-//	    cout << "  TimeSync incoming command: " << buff << endl;
+//        cout << "  TimeSync incoming command: " << buff << endl;
 
-	    // TODO: try sscanf() because it's faster.  scan command and first number right away (time or ip)
-	    istringstream rs(buff);
+        // TODO: try sscanf() because it's faster.  scan command and first number right away (time or ip)
+        istringstream rs(buff);
             string cmd;
             rs >> cmd;
 
             if("T" == cmd){ // process first because timing is important
-	        long long remote;
-	        rs >> remote;
-	        calculate(now, remote);
-	        lastReply = now;
+            long long remote;
+            rs >> remote;
+            calculate(now, remote);
+            lastReply = now;
             } else if("POINT"==cmd){
                 ClusterID retCid;
                 rs >> retCid;
                 if(TIME_SERVER_ID == retCid){
-		    IP ip;
+            IP ip;
                     rs >> ip; // if tracker sent us 127.0.0.1 use tracker's address (they are running on one server)
-		    serverAddr.sin_addr.s_addr = replaceLo(ip, trackerAddr.sin_addr.s_addr);
-		    rs >> serverAddr.sin_port;
+            serverAddr.sin_addr.s_addr = replaceLo(ip, trackerAddr.sin_addr.s_addr);
+            rs >> serverAddr.sin_port;
                 }
             } else if("DROP"==cmd){
-		serverAddr.sin_addr.s_addr = 0; // reset address
-		serverAddr.sin_port = 0; // reset address
-	    }
+        serverAddr.sin_addr.s_addr = 0; // reset address
+        serverAddr.sin_port = 0; // reset address
+        }
         } else if( now > lastReply + std::chrono::seconds(SYNC_TIMEOUT) ){
             // have not received a server address from the tracker yet? or did the sync timeout?
-	    cout << "  TimeSync requesting time server's address from tracker." << endl;
+        cout << "  TimeSync requesting time server's address from tracker." << endl;
             udp.Write(getTimeServCmd.c_str(), getTimeServCmd.length()+1, trackerAddr);
-	    lastReply = now;
+        lastReply = now;
         } else if(serverAddr.sin_port && now > lastLocal + std::chrono::seconds(SYNC_INTERVAL) ){ // is address valid?
-	    cout << "  TimeSync requesting time from time server." << endl; 
-	    string cmd ("TIME");
-	    lastLocal = std::chrono::high_resolution_clock::now();
+        cout << "  TimeSync requesting time from time server." << endl; 
+        string cmd ("TIME");
+        lastLocal = std::chrono::high_resolution_clock::now();
             udp.Write(cmd.c_str(), cmd.length()+1, serverAddr);
         }
     } // while(true)

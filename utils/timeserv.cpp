@@ -35,39 +35,39 @@ void TimeServ::run(){
 
     while(true){
         int ret = udp.ReadSelect( reinterpret_cast<char*>(buff), 1, &from, 30*1000*1000); // read 1 byte of the incoming command (faster)
-	Time t = std::chrono::high_resolution_clock::now();
+    Time t = std::chrono::high_resolution_clock::now();
         if(ret>0){ // don't waste time parsing the command however make sure it did not timeout
-	    unsigned long long int timeUs = duration_cast<std::chrono::microseconds>(t.time_since_epoch()).count();
-	    sprintf( buff,"T %llu", timeUs); // faster than using std::string
+        unsigned long long int timeUs = duration_cast<std::chrono::microseconds>(t.time_since_epoch()).count();
+        sprintf( buff,"T %llu", timeUs); // faster than using std::string
             udp.Write(buff, strlen(buff)+1, from); // +1 for null
-	    cout << "TimeServ " << buff << endl;
-    	}
-	if(t > nextTrackerUpdate) { // register id with tracker (request id)
-	    cout << "Sending my ID to tracker" << endl;
+        cout << "TimeServ " << buff << endl;
+        }
+    if(t > nextTrackerUpdate) { // register id with tracker (request id)
+        cout << "Sending my ID to tracker" << endl;
             udp.Write(cmdID.c_str(), cmdID.length()+1, trackerAddr);
-	    nextTrackerUpdate = t+updateInterval;
-	}
+        nextTrackerUpdate = t+updateInterval;
+    }
     }
 }
 
 
 int main(int argc, char* argv[]){
-	if(argc<3){
+    if(argc<3){
             cout << "distributAr (distributed Architecture framework) time server" << endl;
             cout << "usage: " << argv[0] << " <tracker addr/ip>  <tracker port#>" << endl;
             return 0;
-	}
+    }
 
-	struct hostent* he = gethostbyname(argv[1]); // tracker's IP
-	if(!he){
+    struct hostent* he = gethostbyname(argv[1]); // tracker's IP
+    if(!he){
             cerr << "Can not resolve address for " << argv[1] << endl;
-	    return 1;
-	}
-	IP ip = *reinterpret_cast<IP*>(he->h_addr_list[0]);
+        return 1;
+    }
+    IP ip = *reinterpret_cast<IP*>(he->h_addr_list[0]);
 
-	unsigned short port = atoi(argv[2]); // tracker's port
-	port = htons(port);
+    unsigned short port = atoi(argv[2]); // tracker's port
+    port = htons(port);
 
-	TimeServ ts(ip, port);
-	ts.run();
+    TimeServ ts(ip, port);
+    ts.run();
 }

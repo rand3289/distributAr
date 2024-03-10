@@ -25,9 +25,9 @@ int countHyperEdges(vector<Vertex>& partition){
     for(auto v: partition){          // for every vertex in this partition
         for(auto edge: v.edges){     // and for each of it's edges
             bool external = true;    // assume it is an external edge (hyperedge)
-	    for(auto v2: partition){ // if it's edge connects to a vertex in this partition, it is internal
+        for(auto v2: partition){ // if it's edge connects to a vertex in this partition, it is internal
                 if(edge == v2.id){ external=false; break; }
-	    }
+        }
             if(external){ ++count; }
         }
     }
@@ -64,7 +64,7 @@ void loadGraph(const string& filename, vector<vector<Vertex>>& verts, vector<Gra
         v.push_back( Vertex(id) );
         for(GraphEdge e: edges){
             if(e.from == id){
-	        v.back().edges.push_back(e.to);
+            v.back().edges.push_back(e.to);
             }
         }
     }
@@ -79,7 +79,7 @@ string saveGraph(vector<vector<Vertex>>& verts, vector<GraphEdge>& edges){
         auto vgroup = verts[i];
         for(auto v: vgroup){
             graph.WriteNode(v.id, i); // i(group) becomes label
-	}
+    }
     }
     for(auto e: edges){
         graph.WriteEdge(e.from, e.to, e.label);
@@ -125,14 +125,14 @@ int main(int argc, char* argv[]){
     if(argc < 3){
         cout << "distributAr (distributed Architecture framework) graph optimizer" << endl;
         cout << "usage: " << argv[0] << " filename.dot #partitions" << endl;
-	return 1;
+    return 1;
     }
     string dotFileName = argv[1];
 
     int groupCount = atoi(argv[2]);
     if(groupCount < 2){
         cout << "Invalid group size!" << endl;
-	return 2;
+    return 2;
     }
 
     cout << "Loading graph from " << dotFileName << endl;

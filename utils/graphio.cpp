@@ -39,8 +39,8 @@ void GraphIO::WriteEdge(unsigned int from, unsigned int to, int label){
 
 
 void GraphIO::CloseGraph(){
-	file << "}" << endl;
-	file.close();
+    file << "}" << endl;
+    file.close();
 }
 
 
@@ -75,7 +75,7 @@ void GraphIO::ParseLine(string& line, vector<GraphNode>& nodesOut, vector<GraphE
   vector<string> tokens;
   tokenize(line, tokens);
   if(tokens.size() < 2){
-	return;
+    return;
   }
 
   if( string::npos != tokens[1].find("-") ){ // edge contains "-"
@@ -105,7 +105,7 @@ bool GraphIO::Parse(const string& file, vector<GraphNode>& nodesOut, vector<Grap
       ParseLine(str,nodesOut, edgesOut);
     } catch (string& err){
         cerr << "Exception: " << err << endl;
-	return false;
+    return false;
     }
   }
   return true;

@@ -6,32 +6,32 @@ using namespace std;
 
 
 shared_ptr<ICluster> loadDll(std::string& dllName){
-	cout << "Loading a cluster from " << dllName << endl;
-	void* handle = dlopen(dllName.c_str(), RTLD_NOW);
-	if(!handle){
-		cerr << "Unable to open DLL " << dllName << endl << dlerror() << endl;
-		return shared_ptr<ICluster> ();
-	}
+    cout << "Loading a cluster from " << dllName << endl;
+    void* handle = dlopen(dllName.c_str(), RTLD_NOW);
+    if(!handle){
+        cerr << "Unable to open DLL " << dllName << endl << dlerror() << endl;
+        return shared_ptr<ICluster> ();
+    }
 
-	typedef shared_ptr<ICluster> (*DllFunc)();
-	DllFunc getClass = reinterpret_cast<DllFunc> ( dlsym(handle,"getCluster") );
-	if(!getClass){
-		cerr << "Unable to get Cluster from DLL " << dllName << " " << dlerror() << endl;
-		return shared_ptr<ICluster> ();
-	}
-	return (*getClass)(); // do NOT dlclose() - DLL stays attached forever
+    typedef shared_ptr<ICluster> (*DllFunc)();
+    DllFunc getClass = reinterpret_cast<DllFunc> ( dlsym(handle,"getCluster") );
+    if(!getClass){
+        cerr << "Unable to get Cluster from DLL " << dllName << " " << dlerror() << endl;
+        return shared_ptr<ICluster> ();
+    }
+    return (*getClass)(); // do NOT dlclose() - DLL stays attached forever
 }
 
 
 void boostPriority(std::thread& t){
-	std::thread::native_handle_type threadId = t.native_handle();
-	sched_param sp;
-	sp.sched_priority = sched_get_priority_max(SCHED_FIFO);
-	if(pthread_setschedparam(threadId, SCHED_FIFO, &sp)){
-	    cout << "Failed to boost thread priority: " << strerror(errno) << " ERRNO:" << errno << endl << "Run the server under a priveleged account." << endl << endl;
-	} else {
-	    cout << "Running timing thread with priority " << sp.sched_priority << endl;
-	}
+    std::thread::native_handle_type threadId = t.native_handle();
+    sched_param sp;
+    sp.sched_priority = sched_get_priority_max(SCHED_FIFO);
+    if(pthread_setschedparam(threadId, SCHED_FIFO, &sp)){
+        cout << "Failed to boost thread priority: " << strerror(errno) << " ERRNO:" << errno << endl << "Run the server under a priveleged account." << endl << endl;
+    } else {
+        cout << "Running timing thread with priority " << sp.sched_priority << endl;
+    }
 }
 
 
@@ -47,16 +47,16 @@ ostream& operator<<(ostream& out, const Time& t) {
 /*
 template <typename Rep>
 std::ostream& operator<<(std::ostream& out, const std::chrono::duration<long int, Rep>& d){
-	out << d.count();
-	switch(d.period){ // till C++17
-		case std::nano:        out << "ns"; break;
-		case std::micro:       out << "us"; break;
-		case std::milli:       out << "ms"; break;
-		case std::ratio<1>:    out << "s";  break;
-		case std::ratio<60>:   out << "m";  break;
-		case std::ratio<3600>: out << "h";  break;
-		default:               out << "??"; break;
-	}
+    out << d.count();
+    switch(d.period){ // till C++17
+        case std::nano:        out << "ns"; break;
+        case std::micro:       out << "us"; break;
+        case std::milli:       out << "ms"; break;
+        case std::ratio<1>:    out << "s";  break;
+        case std::ratio<60>:   out << "m";  break;
+        case std::ratio<3600>: out << "h";  break;
+        default:               out << "??"; break;
+    }
 }
 */
 

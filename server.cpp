@@ -19,26 +19,26 @@ string Server::parseCommand(char* cmd){
     ss >> param1;
 
     if(command == "CONNECT"){
-	IP ip = Network::idToMulticast(param1);
-	cout << "Connecting to cluster " << ipStr(param1) << " (IP:" << ip << ")" << endl;
-	network.subscribe(cluster->getId(), param1);
-	return "ACK";
+    IP ip = Network::idToMulticast(param1);
+    cout << "Connecting to cluster " << ipStr(param1) << " (IP:" << ip << ")" << endl;
+    network.subscribe(cluster->getId(), param1);
+    return "ACK";
     } else if(command == "DROP"){
-	cout << "Dropping connection to cluster " << param1 << endl;
+    cout << "Dropping connection to cluster " << param1 << endl;
         network.unsubscribe(cluster->getId(), param1);
-	return "ACK";
+    return "ACK";
     } else if(command == "RUN"){
-	ClusterID old = cluster->getId();
-	if(old != param1 ){
-	    cout << "Changing Cluster ID from " << old << " to " << param1 << endl;
+    ClusterID old = cluster->getId();
+    if(old != param1 ){
+        cout << "Changing Cluster ID from " << old << " to " << param1 << endl;
             cluster->setId(param1);
             IP mcIP = Network::idToMulticast(param1);
             mCastGrp.sin_addr.s_addr = mcIP; // ClusterID has changed. Update the multicast IP
-	}
-	return "ACK";
+    }
+    return "ACK";
     } else if(command == "EXIT"){
-	cout << "Exit command received. Terminating!" << endl;
-	exit(0);
+    cout << "Exit command received. Terminating!" << endl;
+    exit(0);
     }
 
     return cluster->command(cmd);
@@ -99,8 +99,8 @@ void Server::requestIdFromTracker(){
 
 void Server::run(IP ip, unsigned short port, ClusterID id){
     if(!cluster){
-	cerr << "ERROR!  Thread EXITING!  Could not load the DLL.  Make sure to 'setenv LD_LIBRARY_PATH .'" << endl;
-	return;
+    cerr << "ERROR!  Thread EXITING!  Could not load the DLL.  Make sure to 'setenv LD_LIBRARY_PATH .'" << endl;
+    return;
     }
 
     tracker.sin_family = AF_INET;
@@ -123,21 +123,21 @@ void Server::run(IP ip, unsigned short port, ClusterID id){
 
     try{
         while(true){
-	    requestIdFromTracker();
-    	    for(int i = UPDATE_PERIOD; i; --i){
-	        processCommands();
-	        for(int j = commandPeriod; j; --j){
-		    performIO();
-	        }
-    	    }
-	    // adjust the number of times we performIO() before processingCommand() by  matching trackerUpdateRate
-	    Time now = std::chrono::high_resolution_clock::now();
-	    double dt = std::chrono::duration_cast<std::chrono::milliseconds>(now - prev).count();
-	    double ratio = trackerUpdateRate/dt;
-	    commandPeriod = (commandPeriod + ratio*(double)commandPeriod)/2;
-	    commandPeriod = commandPeriod > 0 ? commandPeriod : 1;
-	    cout << "dt=" << dt << "ms ratio=" << ratio << " commandPeriod=" << commandPeriod << endl;
-	    prev = now;
+        requestIdFromTracker();
+            for(int i = UPDATE_PERIOD; i; --i){
+            processCommands();
+            for(int j = commandPeriod; j; --j){
+            performIO();
+            }
+            }
+        // adjust the number of times we performIO() before processingCommand() by  matching trackerUpdateRate
+        Time now = std::chrono::high_resolution_clock::now();
+        double dt = std::chrono::duration_cast<std::chrono::milliseconds>(now - prev).count();
+        double ratio = trackerUpdateRate/dt;
+        commandPeriod = (commandPeriod + ratio*(double)commandPeriod)/2;
+        commandPeriod = commandPeriod > 0 ? commandPeriod : 1;
+        cout << "dt=" << dt << "ms ratio=" << ratio << " commandPeriod=" << commandPeriod << endl;
+        prev = now;
         }
     } catch (const char* ex){
         cerr << "Exception caught: " << ex << ". Exiting" << endl;
@@ -148,7 +148,7 @@ void Server::run(IP ip, unsigned short port, ClusterID id){
     } catch (const std::exception& ex){
         cerr << "Exception caught: " << ex.what() << endl; 
     } catch (...){
-	cerr << "Unknown exception caught" << endl;
+    cerr << "Unknown exception caught" << endl;
     }
 
 } // run()

@@ -37,45 +37,45 @@ inline std::string ipStr(IP ip){
 //}
 
 
-template<typename T, typename M>	// mod can be an enum, int, short
-inline bool modLess(T a, T b, M mod){	// compare two numbers a and b given b=(a+x)%mod, for example a = 9, b=0, mod=10 then b>a
-	T half = mod/2;
-	if(a < half){
-		return b<half ? a<b : a+half<b;  // last case:  0----a-----HALF-----b----mod
-	} else {
-		return b>=half ? a<b : b+half<a; // last case:  0----b-----HALF-----a----mod
-	}
+template<typename T, typename M> // mod can be an enum, int, short
+inline bool modLess(T a, T b, M mod){ // compare two numbers a and b given b=(a+x)%mod, for example a = 9, b=0, mod=10 then b>a
+    T half = mod/2;
+    if(a < half){
+        return b<half ? a<b : a+half<b;  // last case:  0----a-----HALF-----b----mod
+    } else {
+        return b>=half ? a<b : b+half<a; // last case:  0----b-----HALF-----a----mod
+    }
 }
 
 
 inline int getMs(Time t){
-	unsigned long long ms = std::chrono::duration_cast<std::chrono::milliseconds>( t.time_since_epoch() ).count();
-	return ms % std::numeric_limits<int>::max(); // change epoch instead???
+    unsigned long long ms = std::chrono::duration_cast<std::chrono::milliseconds>( t.time_since_epoch() ).count();
+    return ms % std::numeric_limits<int>::max(); // change epoch instead???
 }
 
 
 inline IP localIP(){
-	struct hostent* he = gethostbyname("127.0.0.1");
-	if(!he){
-		std::cerr << "ERROR: Can not resolve local address!!!" << std::endl;
-        	return 0;
-    	}
-	IP ip = *reinterpret_cast<IP*>(he->h_addr_list[0]);
-	return ip;
+    struct hostent* he = gethostbyname("127.0.0.1");
+    if(!he){
+        std::cerr << "ERROR: Can not resolve local address!!!" << std::endl;
+            return 0;
+        }
+    IP ip = *reinterpret_cast<IP*>(he->h_addr_list[0]);
+    return ip;
 }
 
 // function might still come back with 127.0.0.1 if replacement is 127.0.0.1
 inline IP replaceLo(IP ip, IP replacement){
-	const static IP lip = localIP();
-	return ip == lip ? replacement : ip;
+    const static IP lip = localIP();
+    return ip == lip ? replacement : ip;
 }
 
 
 inline void spinner(){
-	const static char* syms = "/~\\|";
-	const static size_t mod = strlen(syms); // sizeof(syms)
-	static size_t idx = 0;
-	std::cout << "\b\b\b " << syms[idx++%mod] << ' ';
+    const static char* syms = "/~\\|";
+    const static size_t mod = strlen(syms); // sizeof(syms)
+    static size_t idx = 0;
+    std::cout << "\b\b\b " << syms[idx++%mod] << ' ';
 }
 
 // inline int bitsToBytes(int bits){ return bits/8 + (bits%8 ? 1 : 0); }

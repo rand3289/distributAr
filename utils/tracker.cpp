@@ -38,7 +38,7 @@ bool operator==(const sockaddr_in& lhs, const sockaddr_in& rhs){
 ClusterID Tracker::findByValue(const sockaddr_in& value) const {
     for(auto it: clusters){
         if( it.second == value){
-	    return it.first;
+        return it.first;
         }
     }
     return 0;
@@ -60,79 +60,79 @@ void Tracker::run(){
         sockaddr_in from;
         int size = sizeof(buff)-1;
         if( !udp.ReadSelect(reinterpret_cast<char*>(&buff), size, &from, 1000000) || 0==size ){
-	    cout <<'.';
-	    cout.flush();
+        cout <<'.';
+        cout.flush();
             continue; // read timed out or failed
         }
 
-	buff[size]=0; // make sure it a "C" string
-	cout << endl << "Incoming: " << buff << endl; 
-	istringstream is(buff);
-	string cmd;
-	is >> cmd;
+    buff[size]=0; // make sure it a "C" string
+    cout << endl << "Incoming: " << buff << endl; 
+    istringstream is(buff);
+    string cmd;
+    is >> cmd;
 
-	ostringstream reply;
-      	const ClusterID cluster = findByValue(from);
+    ostringstream reply;
+          const ClusterID cluster = findByValue(from);
 
-	if(cmd == "ID"){ // cluster is requesting a new ID
-	    ClusterID newId;
-	    is >> newId; // server supplied a non-zero cluster ID?
+    if(cmd == "ID"){ // cluster is requesting a new ID
+        ClusterID newId;
+        is >> newId; // server supplied a non-zero cluster ID?
 
-	    if(0!=newId){ // update tracker's clusterID for that cluster
-	      if(newId!=cluster){
-		clusters.erase(cluster);
-	      }
-	      clusters[newId] = from;
-	      updateTime[newId] = Clock::now();
-	      string io = (newId > RESERVED_CLUSTER_ID) ? "" : "RESERVED ";
-	      cout << io << "Cluster " << cluster << " updated its id to " << newId << endl;
-	      continue;
-	    }
+        if(0!=newId){ // update tracker's clusterID for that cluster
+          if(newId!=cluster){
+        clusters.erase(cluster);
+          }
+          clusters[newId] = from;
+          updateTime[newId] = Clock::now();
+          string io = (newId > RESERVED_CLUSTER_ID) ? "" : "RESERVED ";
+          cout << io << "Cluster " << cluster << " updated its id to " << newId << endl;
+          continue;
+        }
 
-	    if(0==cluster){ // cluster not found
-	        newId = getNextClusterId();
-	        clusters[newId] = from;
-	    } else { // cluster exists - give it the old ID
-		newId = cluster;
-	    }
+        if(0==cluster){ // cluster not found
+            newId = getNextClusterId();
+            clusters[newId] = from;
+        } else { // cluster exists - give it the old ID
+        newId = cluster;
+        }
 
-	    updateTime[newId] = Clock::now();
-	    cout << "Cluster " << cluster << " reserved ID " << newId << endl;
-	    reply << "RUN " << newId;
-	    sendCommand(from, reply.str());
+        updateTime[newId] = Clock::now();
+        cout << "Cluster " << cluster << " reserved ID " << newId << endl;
+        reply << "RUN " << newId;
+        sendCommand(from, reply.str());
 
-	} else if (cmd == "GET"){  // get cluster IP and port
-	    ClusterID what;
-	    is >> what;
+    } else if (cmd == "GET"){  // get cluster IP and port
+        ClusterID what;
+        is >> what;
 
-	    auto it = clusters.find(what);
-	    if(clusters.end() == it){ // not found
-		reply << "DROP " << what;
-	    } else if( isOld(what) ){ // cluster has not updated it's IP:PORT in a long time - probably died or got renamed
-		if(what>RESERVED_CLUSTER_ID){ // IO clusters are special - they can not move and we should not delete them
-		    cout << "cluster " << what << " did not update it's registration in a while.  DELETING." << endl; 
-		    clusters.erase(it);
-		    reply << "DROP " << what;
-		}
-	    } else {
-	        sockaddr_in& addr = it->second;
-	        reply << "POINT " <<  what << " " << addr.sin_addr.s_addr << " " << addr.sin_port;
-	    }
-	    sendCommand(from, reply.str());
+        auto it = clusters.find(what);
+        if(clusters.end() == it){ // not found
+        reply << "DROP " << what;
+        } else if( isOld(what) ){ // cluster has not updated it's IP:PORT in a long time - probably died or got renamed
+        if(what>RESERVED_CLUSTER_ID){ // IO clusters are special - they can not move and we should not delete them
+            cout << "cluster " << what << " did not update it's registration in a while.  DELETING." << endl; 
+            clusters.erase(it);
+            reply << "DROP " << what;
+        }
+        } else {
+            sockaddr_in& addr = it->second;
+            reply << "POINT " <<  what << " " << addr.sin_addr.s_addr << " " << addr.sin_port;
+        }
+        sendCommand(from, reply.str());
 
-	} else if (cmd == "LIST"){ // client wants a list of all clusters
-	    for(auto it: clusters){
-		if( !isOld(it.first) ){ // don't delete old clusters.  just skip
-	            reply << it.first << " ";
-		}
-	    }
-	    sendCommand(from, reply.str() );
+    } else if (cmd == "LIST"){ // client wants a list of all clusters
+        for(auto it: clusters){
+        if( !isOld(it.first) ){ // don't delete old clusters.  just skip
+                reply << it.first << " ";
+        }
+        }
+        sendCommand(from, reply.str() );
 
-	} else if (cmd == "ACK"){
-	    cout << "Server ACKnowledged" << endl;
-	} else {
-	    cout << "UNKNOWN COMMAND " << endl;
-	}
+    } else if (cmd == "ACK"){
+        cout << "Server ACKnowledged" << endl;
+    } else {
+        cout << "UNKNOWN COMMAND " << endl;
+    }
     } // while(true)
 }
 

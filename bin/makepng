@@ -3,13 +3,13 @@
 # make sure graphviz is installed
 which dot > /dev/null
 if [ "$?" -ne "0" ]; then
-	echo "graphviz is not installed! Can not create an image."
-	exit
+    echo "graphviz is not installed! Can not create an image."
+    exit
 fi
 
 if [ "$1" = "" ]; then
-	echo "usage: makepng filename.dot"
-	exit
+    echo "usage: makepng filename.dot"
+    exit
 fi
 
 echo creating $1.png from dot file $1
@@ -17,12 +17,12 @@ dot -O -Tpng $1
 
 which eog > /dev/null # gnome image viewer
 if [ "$?" -eq "0" ]; then
-	eog $1.png &
-	exit
+    eog $1.png &
+    exit
 fi
 
 which ristretto > /dev/null # xfce image viewer
 if [ "$?" -eq "0" ]; then
-	ristretto $1.png &
-	exit
+    ristretto $1.png &
+    exit
 fi

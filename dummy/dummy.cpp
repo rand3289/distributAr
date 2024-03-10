@@ -23,8 +23,8 @@ int DummyCluster::read( IWriter& writer ){
 
 //    std::cout << "D" << maxNodesFired << " ";
     for(int i = 0; i < maxNodesFired; ++i){
-	writer.write( rand() % MAX_OUT_NODES, lastTime);
-	lastTime = lastTime + std::chrono::microseconds( rand() % MAX_TIME_STEP );
+    writer.write( rand() % MAX_OUT_NODES, lastTime);
+    lastTime = lastTime + std::chrono::microseconds( rand() % MAX_TIME_STEP );
     }
     std::this_thread::sleep_for( std::chrono::milliseconds(10) );
     return maxNodesFired;
@@ -32,7 +32,7 @@ int DummyCluster::read( IWriter& writer ){
 
 
 extern "C" { // each DLL provides a way to load itself:
-	std::shared_ptr<ICluster> getCluster() { return std::shared_ptr<ICluster>(new DummyCluster()); }
+    std::shared_ptr<ICluster> getCluster() { return std::shared_ptr<ICluster>(new DummyCluster()); }
 }
 
 /*
@@ -43,7 +43,7 @@ void dumpDataForDebugging(string filename, char* buffer, int size,  const std::c
     dump.open(filename, ios::app);
     dump << endl << now << endl;
     for(int i = 0; i< size; ++i){
-	dump << (int) buffer[i];
+    dump << (int) buffer[i];
     }
     dump.close();
 }
