@@ -61,12 +61,14 @@ void Server::processCommands() {
 
 // callback from Cluster::read()
 int Server::write(int nodeIndex, const Time& time){
-    while( timeBuff->write(nodeIndex, time) < 0 ){
+    while( timeBuff->write(nodeIndex, time) < 0 ){ // while calls write() second time if it fails
         timeBuff->setSrcClusterId(cluster->getId());
         outQ.push(timeBuff); // do this first to decrease latency.  Writing to network takes more time
-	// writing through non-multicast socket.  Packets will have a real src port number, not MULTICAST_PORT.
+        // writing through non-multicast socket.  Packets will have a real src port number, not MULTICAST_PORT.
+        // TODO: writing to network can be done on a different thread since a single network interface
+        // can write only a single packet at a time
         udp.Write((char*)&*timeBuff, timeBuff->size(), mCastGrp);
-	timeBuff = std::make_shared<TimeBuffer>();
+        timeBuff = std::make_shared<TimeBuffer>();
     }
     return 0;
 }
@@ -74,8 +76,11 @@ int Server::write(int nodeIndex, const Time& time){
 
 void Server::performIO(){
     TBPtr bb;
-    // TODO: need to sleep here if queue is empty and isWaitForInput() and be notified when queue is not empty
-    if( inQ.pop(bb) ){ // multicast packet available
+    // sleep here if queue is empty and isWaitForInput()
+    if(cluster->isWaitForInput()){
+        inQ.pop(bb); // blocks untill multicast packet is available
+        cluster->write(bb);
+    } else if( inQ.popNoBlock(bb) ){ // is multicast packet available?
         cluster->write(bb);
     }
 

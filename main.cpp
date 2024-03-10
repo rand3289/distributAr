@@ -75,30 +75,37 @@ int main(int argc, char* argv[]){
 		}
 	}
 
-	// TODO: make sure network writes by local servers are not read back or outgoingQs are useless!
-	TBPtr timeBuff = make_shared<TimeBuffer>();
-	TBPtr data;
-	unordered_map<ClusterID, vector<Server*> > subscribers;
-	for(int i=0; true; ++i){
-            if(0 == i%1000){ // once in a while ( as servers join and leave multicast groups ) rebuild subscribers
-                network.getSubscriptions(subscribers); // this locks!!!
+    // TODO: make sure network writes by local servers are not read back or outgoingQs are useless!
+
+    unordered_map<ClusterID, vector<Server*> > subscribers;
+    for(int i=0; true; ++i){
+        if(0 == i%1000){ // once in a while ( as servers join and leave multicast groups ) rebuild subscribers
+            network.getSubscriptions(subscribers); // this locks!!!
+        }
+
+        TBPtr timeBuff = make_shared<TimeBuffer>();
+        if ( network.readVerify(*timeBuff) ) {
+            for(Server* s: subscribers[timeBuff->getSrcClusterId()] ){
+                s->getIncomingQ().push(timeBuff);
             }
+        }
 
-	    if ( network.readVerify(*timeBuff) ) {
-	        for(Server* s: subscribers[timeBuff->getSrcClusterId()] ){
-		    s->getIncomingQ().push(timeBuff); // lock-less
-		}
-	        timeBuff = make_shared<TimeBuffer>();
-	    }
+// TODO: instead of iterating over server's output queues, 
+// servers can be given a single output queue when constructed.
+// the question is ... would that increase contention ???
+// also would current FreeQueue be sufficient to handle multiple writers???
+// This loop could also be running on a separate thread with a blocking queue
+// which in addition could write these TimeBuffers to network
 
-	    for(auto& src: servers){ // this will clear all "out queues" for all servers
-		if( src->getOutgoingQ().pop(data) ){
-	            for(Server* s: subscribers[data->getSrcClusterId()] ){
-		        s->getIncomingQ().push(data); // lock-less
-		    }
+        TBPtr data;
+        for(auto& src: servers){ // this will process all "out queues" for all servers
+            if( src->getOutgoingQ().pop(data) ){
+                for(Server* s: subscribers[data->getSrcClusterId()] ){
+                    s->getIncomingQ().push(data);
                 }
             }
-	} // for(true)
+        }
+    } // for(true)
 
     } catch (const char* ex){
         cerr << "Exception caught: " << ex << ". Exiting" << endl;
@@ -109,7 +116,7 @@ int main(int argc, char* argv[]){
     } catch (const std::exception& ex){
         cerr << "Exception caught: " << ex.what() << endl; 
     } catch (...){
-	cerr << "Unknown exception caught" << endl;
+        cerr << "Unknown exception caught" << endl;
     }
 
     return 1;

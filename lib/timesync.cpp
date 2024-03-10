@@ -51,7 +51,7 @@ void TimeSync::sync(){
 
         if(size > 0){
             buff[size]=0; // in case remote did not send a null
-	    cout << "  TimeSync incoming command: " << buff << endl;
+//	    cout << "  TimeSync incoming command: " << buff << endl;
 
 	    // TODO: try sscanf() because it's faster.  scan command and first number right away (time or ip)
 	    istringstream rs(buff);

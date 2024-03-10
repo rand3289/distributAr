@@ -3,6 +3,7 @@
 
 #include "main.h"
 #include "udp.h"
+#include "blockq.h"
 #include "queue.h"
 #include "timebuff.h"
 #include "icluster.h"
@@ -15,12 +16,13 @@
 class Network;
 class Subscription;
 
-typedef FreeQueue<std::shared_ptr<TimeBuffer>, MAX_MSG_Q_SIZE> BBQ; // size is time sensitive
+typedef BlockingQueue<std::shared_ptr<TimeBuffer>> BQIn;
+typedef FreeQueue<std::shared_ptr<TimeBuffer>, MAX_MSG_Q_SIZE> BQOut; // size is time sensitive
 
 class Server: public IWriter {
 protected:
-    BBQ inQ;   // incoming buffer queue
-    BBQ outQ;  // outgoing buffer queue
+    BQIn inQ;   // incoming buffer queue
+    BQOut outQ; // outgoing buffer queue
     std::shared_ptr<TimeBuffer> timeBuff;
     Network& network;
 
@@ -39,14 +41,14 @@ protected:
     void performIO();
 public:
     Server(Network& net, std::string& dllName): network(net), cluster( loadDll(dllName) ) {
-	timeBuff = std::make_shared<TimeBuffer>();
-	if(cluster){
-	    timeBuff->setSrcClusterId(cluster->getId()); // if 0, first packet will be lost
+        timeBuff = std::make_shared<TimeBuffer>();
+        if(cluster){
+            timeBuff->setSrcClusterId(cluster->getId()); // if 0, first packet will be lost
         }
     }
     virtual ~Server() {}
-    BBQ& getIncomingQ() { return inQ; }
-    BBQ& getOutgoingQ() { return outQ; }
+    BQIn& getIncomingQ() { return inQ; }
+    BQOut& getOutgoingQ() { return outQ; }
     ICluster& getCluster(){ return *cluster; }
     void run(IP ip, unsigned short port, ClusterID id);
 };
